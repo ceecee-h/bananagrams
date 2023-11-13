@@ -1,0 +1,68 @@
+<!-- 
+Name: Davin Bush, CeeCee Hill, Jonathan Houge
+Course: CSC 337 - Web Programming
+Assignment: Final Project - Bananagrams
+File: index.html
+Date: 11/13/23
+
+-- STILL OOSTA, EDIT WHEN PAGE IS DONE --
+This file is the 'index.html' which houses login & account creation for the web application,
+Bananagrams. It has sections:
+Login User - input a username & password and send a post request by clicking the button.
+             the user will be then be logged in and redirected (assuming valid credentials)
+Create User - input a username & password and send a post request by clicking the button.
+              the user will then be created, an alert popping up for the client once successful.
+
+The javascript logic, including the HTTP requests, is located in 'login.js'.
+The logic for the layout specifications are located in 'login.css'.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <title>Bananagrams: Login Page</title>
+        <link rel="stylesheet" type="text/css" href="login.css">
+        <script src="login.js"></script>
+    </head>
+
+    <body>
+        <h1>Bananagrams</h1>
+        <!-- Login User -->
+        <div id="login">
+            <h2>Login</h2>
+            <div>
+                <label for="username">Username:</label>
+                <input id="username" name="username" type="text">
+            </div>
+            <div>
+                <label for="password">Password:</label>
+                <input id="password" name="password" type="password">
+            </div>
+            <div>
+                <button onclick="loginUser()">Login</button>
+            </div>
+            <div id="problem">
+                <p>Issue logging in with that info</p>
+            </div>
+        </div>
+
+        <!-- Create User -->
+        <div id="create">
+            <h2>Create Account</h2>
+            <div>
+                <label for="newUsername">Username:</label>
+                <input id="newUsername" name="newUsername" type="text">
+            </div>
+            <div>
+                <label for="newPassword">Password:</label>
+                <input id="newPassword" name="newPassword" type="password">
+            </div>
+            <div>
+                <button onclick="createUser()">Create</button>
+            </div>
+        </div>
+    </body>
+
+</html>

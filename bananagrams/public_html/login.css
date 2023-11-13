@@ -1,0 +1,78 @@
+/* 
+Name: Davin Bush, CeeCee Hill, Jonathan Houge
+Course: CSC 337 - Web Programming
+Assignment: Final Project - Bananagrams
+File: login.css
+Date: 11/13/23
+
+-- STILL OOSTA, EDIT WHEN PAGE IS DONE --
+This file is the 'login.css' for the 'Bananagrams' web application.
+It gives 'index_html' the required styling to give the client a
+pleasant interface to interact with for dealing with account creation
+and login, including font-size, element locations, etc.
+
+There are some absolute pixel sizes ('px' instead of 'vw' or 'vh')
+to ensure spacing between labels and inputs.
+*/
+
+body {
+  font-family: monospace;
+  background-color: rgb(60, 60, 60);
+}
+
+#login {
+  margin-bottom: 20vh;
+}
+
+h1 {
+  font-size: 50px;
+}
+
+h2 {
+  font-size: 40px;
+}
+
+h1,
+h2 {
+  margin-bottom: 0;
+  padding-bottom: 1vh;
+  margin-top: 3vh;
+  color: rgb(255, 249, 252);
+}
+
+label,
+button,
+p {
+  margin-left: 30px;
+  font-size: 15px;
+  font-family: monospace;
+  color: rgb(255, 249, 252);
+}
+
+label {
+  width: 80px;
+  display: inline-block;
+  text-align: left;
+}
+
+button {
+  margin-top: 5px;
+  color: black;
+}
+
+p {
+  margin-top: 5px;
+  color: red;
+}
+
+#problem {
+  display: none;
+  color: red;
+}
+
+input {
+  margin: 5px;
+  height: 15px;
+  font-family: monospace;
+  font-size: 15px;
+}
