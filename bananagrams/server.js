@@ -37,22 +37,28 @@ db.on("error", () => {
 
 var Schema = mongoose.Schema;
 
-var ItemSchema = new Schema({
-  title: String,
-  description: String,
-  image: String,
-  price: Number,
-  stat: String,
-});
-var Item = mongoose.model("Item", ItemSchema);
-
 var UserSchema = new Schema({
   username: String,
   password: String,
-  listings: Array, // list of item ids
-  purchases: Array, // list of item ids
+  salt: String,
+  wins: Number,
+  played: Number,
+  friends: Array, // list of object ids
 });
 var User = mongoose.model("User", UserSchema);
+
+var FriendRequestSchema = new Schema({
+  from: Object,
+  to: Object,
+});
+var FriendRequest = mongoose.model("FriendRequest", FriendRequestSchema);
+
+var GameSchema = new Schema({
+  tiles: Array,
+  players: Array,
+});
+var Game = mongoose.model("Game", GameSchema);
+
 app.use(parser.json());
 app.use(cookieParser());
 
@@ -116,8 +122,8 @@ function authenticate(req, res, next) {
   }
 }
 
-app.use("/store/", authenticate);
-app.get("/store/", (req, res, next) => {
+app.use("/game/", authenticate);
+app.get("/game/", (req, res, next) => {
   console.log("another");
   next();
 });
@@ -142,94 +148,6 @@ app.get("/store/get/currentuser/", function (req, res) {
       });
     }
   }
-});
-
-// get all listings by username
-app.get("/store/get/listings/:username", function (req, res) {
-  res.statusCode = 200;
-  res.setHeader("Content-Type", "text/plain");
-
-  let p = User.find({ username: req.params.username }).exec();
-  p.then((users) => {
-    if (users == []) {
-      res.send(JSON.stringify([], null, 4));
-      return;
-    }
-
-    // assume unique usernames
-    if (users.at(0).listings.length == 0) {
-      console.log("No items for user");
-      res.send(JSON.stringify([], null, 4));
-      return;
-    } else {
-      items = Item.find({ _id: { $in: users.at(0).listings } }).exec();
-      items
-        .then((items) => {
-          res.send(JSON.stringify(items, null, 4));
-        })
-        .catch((err) => {
-          console.log(err);
-          res.send("No items found");
-        });
-    }
-  }).catch((err) => {
-    console.log(err);
-    res.send("User not found");
-  });
-});
-
-// get all purchases by username
-app.get("/store/get/purchases/:username", function (req, res) {
-  res.statusCode = 200;
-  res.setHeader("Content-Type", "text/plain");
-
-  let p = User.find({ username: req.params.username }).exec();
-  p.then((users) => {
-    if (users == []) {
-      res.send(JSON.stringify([], null, 4));
-      return;
-    }
-
-    // assume unique usernames
-    if (users.at(0).purchases.length == 0) {
-      console.log("No items for user");
-      res.send(JSON.stringify([], null, 4));
-      return;
-    } else {
-      items = Item.find({ _id: { $in: users.at(0).purchases } }).exec();
-      items
-        .then((items) => {
-          res.send(JSON.stringify(items, null, 4));
-        })
-        .catch((err) => {
-          console.log(err);
-          res.send("No items found");
-        });
-    }
-  }).catch((err) => {
-    console.log(err);
-    res.send("User not found");
-  });
-});
-
-// filter items by description keyword
-app.get("/store/search/items/:keyword", function (req, res) {
-  res.statusCode = 200;
-  res.setHeader("Content-Type", "text/plain");
-
-  let rx = new RegExp(req.params.keyword, "i");
-  let p = Item.find({ description: { $regex: rx } }).exec();
-  p.then((items) => {
-    if (items == []) {
-      res.send("No items found!");
-      return;
-    }
-
-    res.send(JSON.stringify(items, null, 4));
-  }).catch((err) => {
-    console.log(err);
-    res.send("Error fetching users");
-  });
 });
 
 //-- client post requests
@@ -282,76 +200,6 @@ app.post("/login", function (req, res) {
     console.log(err);
     res.send("Error fetching users");
   });
-});
-
-// add an item record by username
-app.post("/store/add/item/:username/", (req, res) => {
-  res.statusCode = 201;
-  res.setHeader("Content-Type", "text/plain");
-
-  let title = req.body.title;
-  let desc = req.body.description;
-  let image = req.body.image;
-  let price = req.body.price;
-  let status = req.body.stat;
-  let username = req.params.username;
-
-  let newItem = new Item({
-    title: title,
-    description: desc,
-    image: image,
-    price: price,
-    stat: status,
-  });
-  newItem.save();
-
-  // conditional - update either listings or purchases
-  if (newItem.stat == "SOLD") {
-    User.updateOne(
-      { username: username },
-      {
-        $push: { purchases: newItem.id },
-      }
-    ).exec();
-  } else {
-    User.updateOne(
-      { username: username },
-      {
-        $push: { listings: newItem.id },
-      }
-    ).exec();
-  }
-
-  res.send("Item created");
-});
-
-// update an item record by username
-app.post("/store/update/item/:username/", (req, res) => {
-  let username = req.params.username;
-  let title = req.body.title;
-
-  let item = Item.findOneAndUpdate(
-    {
-      title: title,
-    },
-    {
-      stat: "SOLD",
-    }
-  ).exec();
-  item
-    .then((i) => {
-      User.updateOne(
-        { username: username },
-        {
-          $push: { purchases: i.id },
-        }
-      ).exec();
-    })
-    .catch((err) => {
-      console.log(err);
-      res.send("Item failed to update");
-    });
-  res.send("Item updated");
 });
 
 // confirmation in terminal - app is up & listening
