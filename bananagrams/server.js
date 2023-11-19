@@ -150,40 +150,6 @@ app.get("/store/get/currentuser/", function (req, res) {
   }
 });
 
-// get all listings by username
-app.get("/store/get/listings/:username", function (req, res) {
-  res.statusCode = 200;
-  res.setHeader("Content-Type", "text/plain");
-
-  let p = User.find({ username: req.params.username }).exec();
-  p.then((users) => {
-    if (users == []) {
-      res.send(JSON.stringify([], null, 4));
-      return;
-    }
-
-    // assume unique usernames
-    if (users.at(0).listings.length == 0) {
-      console.log("No items for user");
-      res.send(JSON.stringify([], null, 4));
-      return;
-    } else {
-      items = Item.find({ _id: { $in: users.at(0).listings } }).exec();
-      items
-        .then((items) => {
-          res.send(JSON.stringify(items, null, 4));
-        })
-        .catch((err) => {
-          console.log(err);
-          res.send("No items found");
-        });
-    }
-  }).catch((err) => {
-    console.log(err);
-    res.send("User not found");
-  });
-});
-
 //-- client post requests
 
 // add a user record
@@ -234,47 +200,6 @@ app.post("/login", function (req, res) {
     console.log(err);
     res.send("Error fetching users");
   });
-});
-
-// add an item record by username
-app.post("/store/add/item/:username/", (req, res) => {
-  res.statusCode = 201;
-  res.setHeader("Content-Type", "text/plain");
-
-  let title = req.body.title;
-  let desc = req.body.description;
-  let image = req.body.image;
-  let price = req.body.price;
-  let status = req.body.stat;
-  let username = req.params.username;
-
-  let newItem = new Item({
-    title: title,
-    description: desc,
-    image: image,
-    price: price,
-    stat: status,
-  });
-  newItem.save();
-
-  // conditional - update either listings or purchases
-  if (newItem.stat == "SOLD") {
-    User.updateOne(
-      { username: username },
-      {
-        $push: { purchases: newItem.id },
-      }
-    ).exec();
-  } else {
-    User.updateOne(
-      { username: username },
-      {
-        $push: { listings: newItem.id },
-      }
-    ).exec();
-  }
-
-  res.send("Item created");
 });
 
 // confirmation in terminal - app is up & listening
