@@ -15,6 +15,7 @@ It fulfills the 'POST' HTTP requests with 'createUser()' and 'createItem()'.
 var currentTiles = [];
 var selectedTileId = '';
 var count = 0;
+var words = [];
 
 // TODO: REMOVE ONCE INFO GRABBED FROM SERVER
 window.onload = () => {
@@ -22,16 +23,90 @@ window.onload = () => {
     addToPool(['A', 'B', 'C'])
 };
 
+function verifyPeel() {
+    let numTiles = 0;
+    let userBoard = new Array(21);
+    let x;
+    let y;
+    // translate to matrix
+    for (let i = 0; i < 21; i++) {
+        userBoard[i] = new Array(42);
+        for (let j = 0; j < 42; j ++) {
+            let tile = document.getElementById(`x${i}y${j}`);
+            if (containsTile(tile)) {
+                numTiles += 1;
+                userBoard[i][j] = tile.children[0].children[0].innerText;
+            } else {
+                userBoard[i][j] = undefined;
+            }
+        }
+    }
+    if (numTiles == 0) {
+        window.alert('Place all tiles on the board!')
+        return false
+    }
+    
+}
+
+function _backtrack(board, x, y, cur) {
+    // TODO
+    if (board[x][y] != undefined) {
+        if (_backtrack(board, x+1, y, cur+ board[x][y])) {
+            return true;
+        }
+        if (_backtrack(board, x, y-1, cur+ board[x][y])) {
+            return true;
+        }
+        if (_backtrack(board, x-1, y, board[x][y] + cur)) {
+            return true;
+        }
+        if (_backtrack(board, x, y+1, board[x][y] + cur)) {
+            return true;
+        }
+    } else {
+        words += cur;
+        cur = '';
+        return false;
+    }
+}
+
+function isValid(board, x, y) {
+    if ((x >= 21) || (y >= 42)) {
+        return false;
+    }
+    if (board[x][y] == undefined) {
+        return false;
+    }
+    return true;
+}
+
+function peel_banana() {
+
+}
+
+function dumpTile() {
+    if (selectedTileId == '') {
+        window.alert('Please select a tile to dump first!')
+    }
+    else {
+        // TODO: add server call
+        let newTiles = ['E', 'X', 'Z'];
+        let oldTile = document.getElementById(selectedTileId);
+        oldTile.parentElement.innerHTML = "";
+        selectedTileId = '';
+        addToPool(newTiles);
+    }
+}
+
 function addToPool(tiles) {
     let pool = document.getElementById('tile_pool');
     let poolHTML = '';
     currentTiles = currentTiles.concat(tiles);
-    for (let i = 0; i < currentTiles.length; i++) {
+    for (let i = 0; i < tiles.length; i++) {
         // TODO: add limit to size of row
-        poolHTML += makeTile(currentTiles[i]);
-        count += 1;
+        poolHTML += makeTile(tiles[i]);
     }
-    pool.innerHTML = poolHTML;
+    pool.innerHTML += poolHTML;
 }
 
 /* 'generateGrid()':
@@ -44,6 +119,9 @@ function generateGrid() {
         gridHTML += '<tr>';
         for (let j = 0; j < 42; j ++) {
             gridHTML += `<td class="gridTile" id="x${i}y${j}" onclick="selectGridTile(this.id)"></td>`;
+            if (gridTile.innerHTML.includes("banana")) {
+                return
+            }
         }
         gridHTML += '</tr>';
     }
@@ -68,28 +146,43 @@ function selectTile(id) {
     else {
         // swap tiles
         let other = document.getElementById(selectedTileId);
-        let temp = other.innerText;
-        other.innerText = tile.innerText;
-        tile.innerText = temp;
-        tile.style.borderColor = 'rgb(59, 31, 24)';
+        let temp = other.innerHTML;
+        other.innerHTML = tile.innerHTML;
+        tile.innerHTML = temp;
+        other.style.borderColor = 'rgb(59, 31, 24)';
         selectedTileId = '';
     }
 }
 
 function selectGridTile(id) {
     let gridTile = document.getElementById(id);
-    if (selectedTileId != '') {
+    // case 1: bananagram placed
+    if (containsTile(gridTile)) {
+        return
+    }
+    // case 2: empty grid tile
+    else if (selectedTileId != '') {
         let oldTile = document.getElementById(selectedTileId);
-        gridTile.innerHTML = makeTile(oldTile.innerText);
+        gridTile.innerHTML = makeGridTile(oldTile.innerText);
         oldTile.parentElement.innerHTML = "";
         selectedTileId = '';
+        oldTile.style.borderColor = 'rgb(59, 31, 24)';
     }
 }
 
 function makeTile(letter) {
+    count += 1;
     return `<div class="wrap"><div class="banana_tile" id="${count}" onclick="selectTile(this.id)"><b>${letter}</b></div></div>`;
 }
 
 function makeGridTile(letter) {
+    count += 1;
     return `<div class="banana_gridtile" id="${count}" onclick="selectTile(this.id)"><b>${letter}</b></div>`;
+}
+
+function containsTile(element) {
+    if (gridTile.innerHTML.includes("banana")) {
+        return true
+    }
+    return false;
 }
