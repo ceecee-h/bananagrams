@@ -31,33 +31,46 @@ The logic for the layout specifications are located in 'login.css'.
         <div id="content">
             <div id="game_panel">
                 <div id="welcome_user"></div>
-                <div id="join_interface"></div>
+                <div id="lobby"></div>
             </div>
             <div id="stat_panel">
-                <table>
+                <div class="container"><table id="user_stats">
                     <tr><th colspan="2">Game Statistics</th></tr>
                     <tr>
                         <td>Wins:</td>
-                        <td id="win_count"></td>
+                        <td id="win_count">5</td>
                     </tr>
                     <tr>
                         <td>Losses:</td>
-                        <td id="lose_count"></td>
+                        <td id="lose_count">10</td>
                     </tr>
                     <tr>
                         <td>Games Played:</td>
-                        <td id="total_games"></td>
+                        <td id="total_games">15</td>
                     </tr>
-                </table>
+                    <tr>
+                        <td>Win Rate:</td>
+                        <td id="win_rate">15</td>
+                    </tr>
+                </table></div>
+                <div class="container"><table id="friends">
+                    <tr><th colspan="2">Friends List</th></tr>
+                    <tr>
+                        <th>
+                            Username
+                        </th>
+                        <th>
+                            Win Rate
+                        </th>
+                    </tr>
+                </table></div>
             </div>
         </div>
         <div id="faq">
             <h2>
                 How to Play
             </h2>
-            <div>
-                
-            </div>
+            <!-- insert image here -->
         </div>
     </body>
 
