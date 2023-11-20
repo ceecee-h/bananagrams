@@ -12,15 +12,35 @@ It allows the client to create/submit their own users & items.
 It fulfills the 'POST' HTTP requests with 'createUser()' and 'createItem()'.
 */
 
+var currentUser; // global user variable
+setTimeout(getUser, 0);
+
+/* 'getUser()':
+Called automatically by the server on load.
+
+Sends a 'GET' request to the server to get the currently logged in user.
+Sets the global user variable and sets the 'welcome' message to be
+personalized for that user.
+*/
+function getUser() {
+  user = fetch("getuser")
+    .then((response) => {
+      return response.text();
+    })
+    .then((user) => {
+      currentUser = JSON.parse(user);
+      setTitle(currentUser.username);
+    });
+}
+
 // TODO: REMOVE ONCE INFO GRABBED FROM SERVER
 window.onload = () => {
-    let friendsList = {'jonathan': 77, 'davin': 52, 'ceecee': 81};
-    setTitle('helsinki');
-    generateLobby('waiting_host', 3);
-    generateStats(12, 50)
-    for (const key in friendsList) {
-        generateFriend(key, friendsList[key]);
-    }
+  let friendsList = { jonathan: 77, davin: 52, ceecee: 81 };
+  generateLobby("waiting_host", 3);
+  generateStats(12, 50);
+  for (const key in friendsList) {
+    generateFriend(key, friendsList[key]);
+  }
 };
 
 // SERVER COMMUNICATION
@@ -31,15 +51,15 @@ can join a game in the lobby
 Will call generateLobby.
 */
 function joinGame() {
-    // TODO: this
+  // TODO: this
 }
 
-/* 'joinGame()':
+/* 'startGame()':
 Trigger the start of a game, moving all players in the
 waiting lobby to the game screen
 */
 function startGame() {
-    // TODO: this
+  // TODO: this
 }
 
 // UI GENERATION
@@ -53,24 +73,24 @@ cases:
         - else: current number of players waiting
     - active: display game in progress
 */
-function generateLobby(status, current_players=0) {
-    let lobby = document.getElementById("lobby"); 
-    switch (status) {
-        case 'open':
-            lobby.innerHTML = '<button class="join" onclick="joinGame()">JOIN GAME</button>';
-            return
-        case 'waiting':
-            lobby.innerHTML = `<div class="waiting"><p>waiting for players...</p><p>${current_players}/4</p></div>`;
-            return
-        case 'waiting_host':
-            lobby.innerHTML = `<div class="waiting"><p>waiting for players...</p><p>${current_players}/4</p><button class="join" onclick="startGame()">START GAME</button></div>`;
-            return
-        case 'active':
-            lobby.innerHTML = '<div id="active">GAME IN PROGRESS...</div>';
-            return
-        default:
-            console.log(`ERROR RESOLVING LOBBY STATUS: ${status}`);
-    }
+function generateLobby(status, current_players = 0) {
+  let lobby = document.getElementById("lobby");
+  switch (status) {
+    case "open":
+      lobby.innerHTML = '<button class="join" onclick="joinGame()">JOIN GAME</button>';
+      return;
+    case "waiting":
+      lobby.innerHTML = `<div class="waiting"><p>waiting for players...</p><p>${current_players}/4</p></div>`;
+      return;
+    case "waiting_host":
+      lobby.innerHTML = `<div class="waiting"><p>waiting for players...</p><p>${current_players}/4</p><button class="join" onclick="startGame()">START GAME</button></div>`;
+      return;
+    case "active":
+      lobby.innerHTML = '<div id="active">GAME IN PROGRESS...</div>';
+      return;
+    default:
+      console.log(`ERROR RESOLVING LOBBY STATUS: ${status}`);
+  }
 }
 
 /* 'setTitle()':
@@ -79,21 +99,20 @@ styled bananagram tiles
 username: username of user
 */
 function setTitle(username) {
-    let title = document.getElementById('welcome_user');
-    let userText = username.toUpperCase();
-    let welcome = 'WELCOME';
-    let titleHTML = '<div class="row">';
-    for (let i = 0; i < welcome.length; i++) {
-        titleHTML += styledBananaTile(welcome[i]);
-    }
-    titleHTML += '</div><div class="row">'
-    for (let i = 0; i < userText.length; i++) {
-        titleHTML += styledBananaTile(userText[i]);
-    }
-    titleHTML += '</div>'
-    title.innerHTML = titleHTML;
+  let title = document.getElementById("welcome_user");
+  let userText = username.toUpperCase();
+  let welcome = "WELCOME";
+  let titleHTML = '<div class="row">';
+  for (let i = 0; i < welcome.length; i++) {
+    titleHTML += styledBananaTile(welcome[i]);
+  }
+  titleHTML += '</div><div class="row">';
+  for (let i = 0; i < userText.length; i++) {
+    titleHTML += styledBananaTile(userText[i]);
+  }
+  titleHTML += "</div>";
+  title.innerHTML = titleHTML;
 }
-
 
 /* 'styledBananaTile()':
 Builds the ui component for a bananagram tile, for stylistic
@@ -102,7 +121,7 @@ purposes only on the home page.
 Takes a letter and returns the html needed to embed a tile.
 */
 function styledBananaTile(letter) {
-    return `<div class="wrap"><div class="banana_tile"><b>${letter}</b></div></div>`;
+  return `<div class="wrap"><div class="banana_tile"><b>${letter}</b></div></div>`;
 }
 
 /* 'generateFriend()':
@@ -111,8 +130,8 @@ Builds the ui component for a friend entry in the friend list table
 Takes the friend's username and win rate
 */
 function generateFriend(username, win_rate) {
-    let friendTable = document.getElementById("friends");
-    friendTable.innerHTML += `<tr><td>${username}</td><td>${win_rate}%</td></tr>`;
+  let friendTable = document.getElementById("friends");
+  friendTable.innerHTML += `<tr><td>${username}</td><td>${win_rate}%</td></tr>`;
 }
 
 /* 'generateStats()':
@@ -120,12 +139,12 @@ Calculates the user statistics based off the given wins and total games
 played for a user and sets those values into the ui table component
 */
 function generateStats(wins, total) {
-    let win_count = document.getElementById('win_count');
-    win_count.innerText = wins;
-    let lose_count = document.getElementById('lose_count');
-    lose_count.innerText =  total - wins;
-    let total_games = document.getElementById('total_games');
-    total_games.innerText = total
-    let win_rate = document.getElementById('win_rate');
-    win_rate.innerText = `${(wins/total)*100}%`;
+  let win_count = document.getElementById("win_count");
+  win_count.innerText = wins;
+  let lose_count = document.getElementById("lose_count");
+  lose_count.innerText = total - wins;
+  let total_games = document.getElementById("total_games");
+  total_games.innerText = total;
+  let win_rate = document.getElementById("win_rate");
+  win_rate.innerText = `${(wins / total) * 100}%`;
 }

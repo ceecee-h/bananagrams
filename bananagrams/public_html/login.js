@@ -35,7 +35,7 @@ function loginUser() {
     return response.status;
   })
     .then((status) => {
-      if (status == 200) window.location.replace(`${window.location.origin}/store/home.html`);
+      if (status == 200) window.location.replace(`${window.location.origin}/game/home.html`);
       else errorText.style.display = "block";
     })
     .catch((error) => {
@@ -57,7 +57,7 @@ function createUser() {
   let package = userPackager("newUsername", "newPassword");
   if (JSON.stringify(package) == "{}") return; // there was a problem
 
-  let p = fetch("/add/user", {
+  let p = fetch("/create", {
     method: "POST",
     body: JSON.stringify(package),
     headers: { "Content-Type": "application/json" },
