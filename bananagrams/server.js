@@ -56,8 +56,26 @@ var FriendRequest = mongoose.model("FriendRequest", FriendRequestSchema);
 var GameSchema = new Schema({
   tiles: Array,
   players: Array,
+  peel: Boolean,
 });
 var Game = mongoose.model("Game", GameSchema);
+
+let validWords = makeWordList();
+
+function makeWordList() {
+  const fs = require('fs');
+  const wordList = [];
+
+  const data = fs.readFileSync("dictionary.txt",
+               { encoding: 'utf8', flag: 'r' });
+
+  let words = data.split('\n');
+  for (let i in words) {
+    let word = words[i];
+    wordList.push(word);
+  }
+  return wordList;
+}
 
 app.use(parser.json());
 app.use(cookieParser());
@@ -201,6 +219,118 @@ app.post("/login", function (req, res) {
     res.send("Error fetching users");
   });
 });
+
+
+// creates a new game if one doesn't exist - or adds the player to the current game
+app.post("/joingame", async function (req, res) {
+  res.setHeader("Content-Type", "text/plain");
+  let user = req.body.user;
+
+  let game = await Game.findOne({}).exec();
+  if (game === null) {
+    let newGame = new Game({
+      tiles: ["A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+              "A", "B", "B", "B", "C", "C", "C", "D", "D", "D", "D", "D",
+              "D", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+              "E", "E", "E", "E", "E", "E", "E", "F", "F", "F", "G", "G",
+              "G", "G", "H", "H", "H", "I", "I", "I", "I", "I", "I", "I",
+              "I", "I", "I", "I", "I", "J", "J", "K", "K", "L", "L", "L",
+              "L", "L", "M", "M", "M", "N", "N", "N", "N", "N", "N", "N",
+              "N", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O",
+              "P", "P", "P", "Q", "Q", "R", "R", "R", "R", "R", "R", "R",
+              "R", "R", "S", "S", "S", "S", "S", "S", "T", "T", "T", "T",
+              "T", "T", "T", "T", "T", "U", "U", "U", "U", "U", "U", "V",
+              "V", "V", "W", "W", "W", "X", "X", "Y", "Y", "Y", "Z", "Z"]
+      players: [user]
+    });
+    await newGame.save();
+    res.end("Game created");
+  }
+  else {
+    if (game.players.length == 4) {
+      res.end("Game full");
+    }
+    else {
+      await Game.updateOne({}, {$push: {players: user}});
+      res.end("Player added");
+    }
+  }
+});
+
+
+// returns a random tile from the pool of available tiles and removes it from the pool
+async function getTile() {
+  let game = await Game.findOne({}).exec();
+  let index = Math.floor(Math.random() * game.tiles.length);
+  let letter = game.tiles[index];
+  let newArr = game.tiles.splice(index, 1);
+  await Game.updateOne({}, {tiles: newArr});
+  return letter;
+}
+
+function checkValid(words) {
+  for (i in words) {
+    let word = words[i];
+    if (!dict.includes(word)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+
+// puts a peel into the queue 
+app.post("/game/peel", async function (req, res) {
+  let game = await Game.findOne({});
+  if (!game.peel) {
+    if (game.tiles.length < game.players.length) {
+      let words = req.body.words;
+      let user = req.body.user;
+      let valid = checkValid(words);
+      //if valid is true: this player wins
+      //if valid is false: every other player wins
+    }
+    else {
+      await Game.updateOne({}, {peel: true});
+      setInterval(() => {Game.updateOne({}, {peel: false})}, 1000);
+    }
+  }
+});
+
+
+// called on eevry tick to update the game state
+app.post("/game/ping", async function (req, res) {
+  res.setHeader("Content-Type", "text/plain");
+  let game = await Game.findOne({}).exec();
+  if (game.peel) {
+    let peel = await getTile();
+    let tile = {tile: peel};
+    res.status(200).send(JSON.stringify(tile, null, 4));
+  }
+});
+
+
+// takes a tile to be dumped, returns a json object containing a list of three new letters
+app.post("/game/dump", async function (req, res) {
+  res.setHeader("Content-Type", "text/plain");
+  let dump = req.body.tile;
+  let game = await Game.findOne({}).exec();
+  if (game.tiles.length  < 3) {
+    res.status(400).send("DUMP: NOT ENOUGH TILES");
+  }
+  else if (game.peel) {
+    res.status(400).send("DUMP: CANNOT DUMP RIGHT NOW");
+  }
+  else {
+    let tile1 = await getTile();
+    let tile2 = await getTile();
+    let tile3 = await getTile();
+    let newTiles = {tiles: [tile1, tile2, tile3]};
+    await Game.updateOne({}, {$push: {tiles: dump}});
+    res.status(200).send(JSON.stringify(newTiles, null, 4)); 
+  }
+});
+
 
 // confirmation in terminal - app is up & listening
 app.listen(port, () => console.log(`App listening at http://localhost:${port}`));
