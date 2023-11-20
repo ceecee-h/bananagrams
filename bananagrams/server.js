@@ -66,6 +66,7 @@ app.use(cookieParser());
 
 // session info
 let sessions = {};
+let timeout = 1800000;
 
 /* 'addSession()':
 Called upon a user login and adds a user sessionId to the session
@@ -80,8 +81,10 @@ function addSession(username) {
 
 /* 'removeSessions()':
 Checks if the current sessions stored in the session dictionary
-are expired, if so, removes the user from the dictionary, effectively
-revoking their authorization.
+are expired.
+If a session has expired, find the user and see if they're currently playing.
+If they're playing, reset the timer. If they aren't, remove the user from the
+dictionary, effectively revoking their authorization.
 */
 function removeSessions() {
   let now = Date.now();
@@ -89,12 +92,16 @@ function removeSessions() {
   for (let i = 0; i < usernames.length; i++) {
     let last = sessions[usernames[i]].time;
 
-    // remove every thirty minutes, if not in a game
-    if (last + 0 < now) {
+    // the allotted time has expired
+    if (last + timeout < now) {
+      let username = usernames[i];
       let p = User.findOne({ username: username }).exec();
       p.then((user) => {
-        console.log(user);
-        delete sessions[usernames[i]];
+        if (!user.inGame) {
+          delete sessions[usernames[i]];
+        } else {
+          sessions[usernames[i]].time = Date.now() + timeout; // give the user more time - they're in-game!
+        }
       });
     }
   }
