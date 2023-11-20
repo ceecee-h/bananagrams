@@ -1,0 +1,44 @@
+<!-- 
+Name: Davin Bush, CeeCee Hill, Jonathan Houge
+Course: CSC 337 - Web Programming
+Assignment: Final Project - Bananagrams
+File: game.html
+Date: 11/13/23
+
+-- STILL OOSTA, EDIT WHEN PAGE IS DONE --
+This file is the 'game.html' which houses login & account creation for the web application,
+Bananagrams. It has sections:
+Login User - input a username & password and send a post request by clicking the button.
+             the user will be then be logged in and redirected (assuming valid credentials)
+Create User - input a username & password and send a post request by clicking the button.
+              the user will then be created, an alert popping up for the client once successful.
+
+The javascript logic, including the HTTP requests, is located in 'login.js'.
+The logic for the layout specifications are located in 'login.css'.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <title>Bananagrams: Home Page</title>
+        <link rel="stylesheet" type="text/css" href="game.css">
+        <script src="game.js"></script>
+    </head>
+
+    <body>
+        <div id="game_grid">
+            <table id="playspace"></table>
+        </div>
+        <div id="bottom_panel">
+            <div id="tile_pool">
+            </div>
+            <div id="action_buttons">
+                <button class="action_button" id="peel_banana" onclick="peelBanana()">PEEL</button>
+                <button class="action_button" id="dump" onclick="dumpTile()">DUMP</button>
+            </div>
+        </div>
+    </body>
+
+</html>
