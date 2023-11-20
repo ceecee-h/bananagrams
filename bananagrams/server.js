@@ -90,8 +90,12 @@ function removeSessions() {
     let last = sessions[usernames[i]].time;
 
     // remove every thirty minutes, if not in a game
-    if (last + 1800000 < now) {
-      delete sessions[usernames[i]];
+    if (last + 0 < now) {
+      let p = User.findOne({ username: username }).exec();
+      p.then((user) => {
+        console.log(user);
+        delete sessions[usernames[i]];
+      });
     }
   }
   console.log(sessions);
