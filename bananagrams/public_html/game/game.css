@@ -1,0 +1,132 @@
+/* 
+Name: Davin Bush, CeeCee Hill, Jonathan Houge
+Course: CSC 337 - Web Programming
+Assignment: Final Project - Bananagrams
+File: home.css
+Date: 11/13/23
+
+-- STILL OOSTA, EDIT WHEN PAGE IS DONE --
+This file is the 'login.css' for the 'Bananagrams' web application.
+It gives 'index_html' the required styling to give the client a
+pleasant interface to interact with for dealing with account creation
+and login, including font-size, element locations, etc.
+
+There are some absolute pixel sizes ('px' instead of 'vw' or 'vh')
+to ensure spacing between labels and inputs.
+*/
+
+body {
+    background-color: rgb(253, 255, 156);
+    color: black;
+    font-family: monospace;
+}
+
+#game_grid {
+    position: fixed;
+    margin: auto;
+    height: 80%;
+    width: 100%;
+    top: 0;
+    left: 0;
+}
+
+table {
+    border-collapse: collapse;
+    height: 100%;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.gridTile {
+    aspect-ratio: 1;
+    overflow: hidden;
+    border: 2px solid grey;
+}
+
+#bottom_panel {
+    position: fixed;
+    height: 20%;
+    left: 0;
+    bottom: 0;
+}
+
+#tile_pool {
+    position: fixed;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    overflow: hidden;
+    left: 0;
+    right: 20;
+    height: 100%;
+    width: 80%;
+}
+
+#action_buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    position: fixed;
+    right: 0;
+    left: 80;
+    height: 20%;
+    width: 20%;
+    border-left: 4px solid black;
+}
+
+.action_button {
+    flex: 1;
+    margin: 5%;
+    height: 50%;
+    width: 80%;
+    text-align: center;
+    font-family: monospace;
+    font-size: xx-large;
+    background-color: rgb(234, 215, 174);
+    border: 3px solid rgb(41, 28, 28);
+    border-radius: 5px;
+    color: rgb(59, 31, 24);
+}
+
+/* other */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.wrap {
+    flex: 1;
+    flex-grow: 0;
+}
+
+.banana_tile {
+    margin: 10%;
+    text-align: center;
+    font-size: large;
+    background-color: rgb(234, 215, 174);
+    border: 3px solid rgb(41, 28, 28);
+    border-radius: 5px;
+    color: rgb(59, 31, 24);
+    height: 20px;
+    width: 20px;
+}
+
+.banana_gridtile {
+    text-align: center;
+    font-size: large;
+    background-color: rgb(234, 215, 174);
+    border: 3px solid rgb(41, 28, 28);
+    border-radius: 5px;
+    color: rgb(59, 31, 24);
+    height: 20px;
+    width: 20px;
+}
