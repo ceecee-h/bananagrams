@@ -28,10 +28,62 @@ The logic for the layout specifications are located in 'login.css'.
     </head>
 
     <body>
-        <h1>Bananagrams</h1>
+        <div id="loginHeader">
+            <div class="row">
+                <div class="wrap">
+                    <div class="banana_tile"><b>B</b></div>
+                </div>
+                <div class="wrap">
+                    <div class="banana_tile"><b>A</b></div>
+                </div>
+                <div class="wrap">
+                    <div class="banana_tile"><b>N</b></div>
+                </div>
+                <div class="wrap">
+                    <div class="banana_tile"><b>A</b></div>
+                </div>
+                <div class="wrap">
+                    <div class="banana_tile"><b>N</b></div>
+                </div>
+                <div class="wrap">
+                    <div class="banana_tile"><b>A</b></div>
+                </div>
+                <div class="wrap">
+                    <div class="banana_tile"><b>G</b></div>
+                </div>
+                <div class="wrap">
+                    <div class="banana_tile"><b>R</b></div>
+                </div>
+                <div class="wrap">
+                    <div class="banana_tile"><b>A</b></div>
+                </div>
+                <div class="wrap">
+                    <div class="banana_tile"><b>M</b></div>
+                </div>
+                <div class="wrap">
+                    <div class="banana_tile"><b>S</b></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="wrap">
+                    <div class="banana_tile"><b>L</b></div>
+                </div>
+                <div class="wrap">
+                    <div class="banana_tile"><b>O</b></div>
+                </div>
+                <div class="wrap">
+                    <div class="banana_tile"><b>G</b></div>
+                </div>
+                <div class="wrap">
+                    <div class="banana_tile"><b>I</b></div>
+                </div>
+                <div class="wrap">
+                    <div class="banana_tile"><b>N</b></div>
+                </div>
+            </div>
+        </div>
         <!-- Login User -->
         <div id="login">
-            <h2>Login</h2>
             <div>
                 <label for="username">Username:</label>
                 <input id="username" name="username" type="text">
@@ -39,28 +91,13 @@ The logic for the layout specifications are located in 'login.css'.
             <div>
                 <label for="password">Password:</label>
                 <input id="password" name="password" type="password">
-            </div>
-            <div>
                 <button onclick="loginUser()">Login</button>
             </div>
             <div id="problem">
                 <p>Issue logging in with that info</p>
             </div>
-        </div>
-
-        <!-- Create User -->
-        <div id="create">
-            <h2>Create Account</h2>
-            <div>
-                <label for="newUsername">Username:</label>
-                <input id="newUsername" name="newUsername" type="text">
-            </div>
-            <div>
-                <label for="newPassword">Password:</label>
-                <input id="newPassword" name="newPassword" type="password">
-            </div>
-            <div>
-                <button onclick="createUser()">Create</button>
+            <div id="create">
+                <a href="create.html">Don't have an account? Make one!</a>
             </div>
         </div>
     </body>

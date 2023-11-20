@@ -16,20 +16,21 @@ to ensure spacing between labels and inputs.
 */
 
 body {
+  background-color: rgb(253, 255, 156);
+  color: black;
+  overflow-y: scroll;
   font-family: monospace;
-  background-color: rgb(60, 60, 60);
+}
+
+#loginHeader {
+  width: 50vw;
+  margin: auto;
 }
 
 #login {
-  margin-bottom: 20vh;
-}
-
-h1 {
-  font-size: 50px;
-}
-
-h2 {
-  font-size: 40px;
+  padding-top: 15vh;
+  width: 50vw;
+  margin: auto;
 }
 
 h1,
@@ -37,27 +38,27 @@ h2 {
   margin-bottom: 0;
   padding-bottom: 1vh;
   margin-top: 3vh;
-  color: rgb(255, 249, 252);
 }
 
 label,
 button,
 p {
-  margin-left: 30px;
-  font-size: 15px;
+  font-size: 30px;
   font-family: monospace;
-  color: rgb(255, 249, 252);
+  color: black;
+  border-radius: 0;
 }
 
 label {
   width: 80px;
   display: inline-block;
   text-align: left;
+  margin-right: 60px;
 }
 
 button {
-  margin-top: 5px;
-  color: black;
+  margin-left: 10px;
+  display: inline-block;
 }
 
 p {
@@ -72,7 +73,26 @@ p {
 
 input {
   margin: 5px;
-  height: 15px;
+  height: 30px;
   font-family: monospace;
-  font-size: 15px;
+  font-size: 30px;
+}
+
+.banana_tile {
+  margin: 2px;
+  text-align: center;
+  font-size: 40px;
+  background-color: rgb(234, 215, 174);
+  border: 3px solid rgb(41, 28, 28);
+  border-radius: 5px;
+  color: rgb(59, 31, 24);
+  height: 50px;
+  width: 50px;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
 }
