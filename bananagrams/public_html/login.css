@@ -93,3 +93,31 @@ input {
   justify-content: space-evenly;
   align-items: center;
 }
+
+#how_to_button {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background-color: rgb(234, 215, 174);
+  border: 3px solid rgb(41, 28, 28);
+  border-radius: 5px;
+  padding: 5px;
+  font-weight: bold;
+}
+
+a:link,
+a:visited {
+  color: rgb(59, 31, 24);
+}
+
+.section {
+  font-weight: bold;
+  font-size: 30px;
+  margin-left: 20px;
+  margin-bottom: 15px;
+}
+
+.text {
+  font-size: 15px;
+  margin-bottom: 30px;
+}
