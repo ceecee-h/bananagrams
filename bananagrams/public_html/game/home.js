@@ -60,6 +60,7 @@ waiting lobby to the game screen
 */
 function startGame() {
   // TODO: this
+  window.location.replace(`${window.location.origin}/game/game.html`)
 }
 
 // UI GENERATION
