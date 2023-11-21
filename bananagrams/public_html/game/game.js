@@ -119,9 +119,6 @@ function generateGrid() {
         gridHTML += '<tr>';
         for (let j = 0; j < 42; j ++) {
             gridHTML += `<td class="gridTile" id="x${i}y${j}" onclick="selectGridTile(this.id)"></td>`;
-            if (gridTile.innerHTML.includes("banana")) {
-                return
-            }
         }
         gridHTML += '</tr>';
     }
@@ -181,7 +178,7 @@ function makeGridTile(letter) {
 }
 
 function containsTile(element) {
-    if (gridTile.innerHTML.includes("banana")) {
+    if (element.innerHTML.includes("banana")) {
         return true
     }
     return false;
