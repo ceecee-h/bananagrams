@@ -20,7 +20,9 @@ var words = [];
 // TODO: REMOVE ONCE INFO GRABBED FROM SERVER
 window.onload = () => {
     generateGrid();
-    addToPool(['A', 'B', 'C'])
+    addToPool(['A', 'A', 'B', 'C', 'E', 'E', 'E', 
+                'F', 'H', 'I', 'L', 'K', 'M', 'M',
+                'P', 'Q', 'R', 'S', 'S', 'T', 'U'])
 };
 
 function verifyPeel() {
