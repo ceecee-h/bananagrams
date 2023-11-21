@@ -5,11 +5,10 @@ Assignment: Final Project - Bananagrams
 File: login.js
 Date: 11/13/23
 
--- STILL OOSTA, EDIT WHEN PAGE IS DONE --
 This is 'login.js', the client javascript file for account handling within 'Bananagrams'.
 The HTML page 'index.html' utilizes this file.
 It allows the client to create/submit their own users & items.
-It fulfills the 'POST' HTTP requests with 'createUser()' and 'createItem()'.
+It sends out HTTP requests with 'createUser()' and 'loginUser()'.
 */
 
 /* 'login()':
@@ -21,10 +20,11 @@ Gathers inputs, checks them, and uses them to create the url.
 Status code dictates whether or not the user will be redirected.
 */
 function loginUser() {
-  let package = userPackager("username", "password");
+  let package = userPackager();
   if (JSON.stringify(package) == "{}") return; // there was a problem
 
   let errorText = document.getElementById("problem");
+
   let p = fetch("/login", {
     method: "POST",
     body: JSON.stringify(package),
@@ -54,7 +54,7 @@ Package is then turned into a JSON file and sent to the server.
 The server sends back a confirmation message.
 */
 function createUser() {
-  let package = userPackager("newUsername", "newPassword");
+  let package = userPackager();
   if (JSON.stringify(package) == "{}") return; // there was a problem
 
   let p = fetch("/create", {
@@ -67,16 +67,16 @@ function createUser() {
     return response.text();
   })
     .then((text) => {
-      window.alert(text); // message from server, tell user about success
+      window.alert(text); // message from server, tell user result of operation
+
+      // if successful, redirect to the login page
+      if (text == "USER CREATED") window.location.replace(`${window.location.origin}`);
     })
     .catch((error) => {
       console.log("THERE WAS A PROBLEM");
       console.log(error);
-      window.alert("User Creation: An error occurred.");
+      window.alert("USER CREATION: An error occurred.");
     });
-
-  document.getElementById("newUsername").value = "";
-  document.getElementById("newPassword").value = "";
 }
 
 /* 'userPackager()':
@@ -85,14 +85,11 @@ Helper function for user related operations.
 Gathers the necessary client inputs, does some light error checking
 on them, and then returns an object back to 'createUser()', either
 an empty one if there was a problem or a proper one to be used in the 'POST'.
-'createUser()' and 'loginUser()' have different HTML elements for gathering
-data, so 'uElem' and 'pElem' are filled in by the callers to make sure their
-correct elements are grabbed.
 */
-function userPackager(uElem, pElem) {
+function userPackager() {
   // gathering
-  let user = document.getElementById(uElem).value;
-  let password = document.getElementById(pElem).value;
+  let user = document.getElementById("username").value;
+  let password = document.getElementById("password").value;
 
   // light error checking & return
   if (user == "" || password == "") {
