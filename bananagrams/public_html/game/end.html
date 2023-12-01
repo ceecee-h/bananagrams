@@ -1,0 +1,79 @@
+<!-- 
+Name: Davin Bush, CeeCee Hill, Jonathan Houge
+Course: CSC 337 - Web Programming
+Assignment: Final Project - Bananagrams
+File: end.html
+Date: 11/13/23
+
+-- STILL OOSTA / HOME.HTML, EDIT WHEN PAGE IS DONE --
+This file is the 'index.html' which houses login & account creation for the web application,
+Bananagrams. It has sections:
+Login User - input a username & password and send a post request by clicking the button.
+             the user will be then be logged in and redirected (assuming valid credentials)
+Create User - input a username & password and send a post request by clicking the button.
+              the user will then be created, an alert popping up for the client once successful.
+
+The javascript logic, including the HTTP requests, is located in 'login.js'.
+The logic for the layout specifications are located in 'login.css'.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <title>Bananagrams: Game End Screen</title>
+        <link rel="stylesheet" type="text/css" href="end.css">
+        <script src="home.js"></script>
+    </head>
+
+    <body>
+        <div id="content">
+            <div id="game_panel">
+                <div id="winners"></div>
+                <div id="return"></div>
+            </div>
+            <div id="stat_panel">
+                <div class="container">
+                    <table id="user_stats">
+                        <tr>
+                            <th colspan="2">Game Statistics</th>
+                        </tr>
+                        <tr>
+                            <td>Wins:</td>
+                            <td id="win_count">5</td>
+                        </tr>
+                        <tr>
+                            <td>Losses:</td>
+                            <td id="lose_count">10</td>
+                        </tr>
+                        <tr>
+                            <td>Games Played:</td>
+                            <td id="total_games">15</td>
+                        </tr>
+                        <tr>
+                            <td>Win Rate:</td>
+                            <td id="win_rate">15</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="container">
+                    <table id="friends">
+                        <tr>
+                            <th colspan="2">Friends List</th>
+                        </tr>
+                        <tr>
+                            <th>
+                                Username
+                            </th>
+                            <th>
+                                Win Rate
+                            </th>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </body>
+
+</html>
