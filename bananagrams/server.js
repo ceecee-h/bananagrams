@@ -71,6 +71,8 @@ var GameSchema = new Schema({
   tiles: Array,
   players: Array,
   peel: Boolean,
+  win: Boolean,
+  user: String,
 });
 var Game = mongoose.model("Game", GameSchema);
 
@@ -267,6 +269,22 @@ app.get("/game/getuser", function (req, res) {
       });
     }
   }
+});
+
+// get the current game
+app.get("/game/getgame", function (req, res) {
+  res.setHeader("Content-Type", "text/plain");
+  let user = req.user;
+  if (!user.inGame) res.status(403).send("INVALID");
+
+  let game = Game.findOne({})
+    .exec()
+    .then((game) => {
+      if (game.length == 0) res.status(404).send("INVALID");
+      else {
+        res.status(200).send(JSON.stringify(game, null, 4));
+      }
+    });
 });
 
 // creates a new game if one doesn't exist - or adds the player to the current game
