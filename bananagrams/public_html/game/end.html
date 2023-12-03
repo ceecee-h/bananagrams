@@ -24,20 +24,22 @@ The logic for the layout specifications are located in 'login.css'.
         <meta charset="utf-8">
         <title>Bananagrams: Game End Screen</title>
         <link rel="stylesheet" type="text/css" href="end.css">
-        <script src="home.js"></script>
+        <script src="end.js"></script>
     </head>
 
     <body>
         <div id="content">
             <div id="game_panel">
                 <div id="winners"></div>
-                <div id="return"></div>
+                <div id="return">
+                    <button onclick="returnLobby()">Return to Lobby</button>
+                </div>
             </div>
             <div id="stat_panel">
                 <div class="container">
                     <table id="user_stats">
                         <tr>
-                            <th colspan="2">Game Statistics</th>
+                            <th colspan="2">Game Players</th>
                         </tr>
                         <tr>
                             <td>Wins:</td>
