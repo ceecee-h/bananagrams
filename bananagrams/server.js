@@ -62,8 +62,8 @@ var UserSchema = new Schema({
 var User = mongoose.model("User", UserSchema);
 
 var FriendRequestSchema = new Schema({
-  from: Object,
-  to: Object,
+  from: String,
+  to: String,
 });
 var FriendRequest = mongoose.model("FriendRequest", FriendRequestSchema);
 
@@ -402,6 +402,26 @@ app.post("/game/dump", async function (req, res) {
     res.status(200).send(JSON.stringify(newTiles, null, 4));
   }
 });
+
+
+app.post("/game/friendrequest", async function (req, res)) {
+  res.setHeader("Content-Type", "text/plain");
+  let from = req.body.from;
+  let to = req.body.to;
+  let request = await FriendRequest.findOne({from: to, to: from}).exec();
+  if (request === null) {
+    let newRequest = new FriendRequest({from: from, to: to});
+    await newRequest.save();
+    res.status(200).send("Request Pending")
+  }
+  else {
+    await User.updateOne({username: from}, { $push: { friends: to } });
+    await User.updateOne({username: to}, { $push: { friends: from } });
+    await FriendRequest.deleteOne({from: from, to: to});
+    res.status(200).send("Friend Added")
+  }
+}
+
 
 // confirmation in terminal - app is up & listening
 app.listen(port, () => console.log(`App listening at http://localhost:${port}`));
