@@ -34,6 +34,26 @@ function getUser() {
     });
 }
 
+/* 'getFriendList()':
+Called automatically by the server on load.
+
+Sends a 'GET' request to the server to get the currently logged in user.
+Sets the global user variable and sets the 'welcome' message to be
+personalized for that user.
+*/
+function getFriendList() {
+  friendlist = fetch("friends")
+    .then((response) => {
+      return response.text();
+    })
+    .then((friendlist) => {
+      friends = JSON.parse(friendlist);
+      for (const f in friends) {
+        generateFriend(f[0], f[1]);
+      }
+    });
+}
+
 // TODO: REMOVE ONCE INFO GRABBED FROM SERVER
 window.onload = () => {
   let friendsList = { jonathan: 77, davin: 52, ceecee: 81 };

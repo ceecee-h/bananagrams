@@ -272,6 +272,26 @@ app.get("/game/getuser", function (req, res) {
   }
 });
 
+// get friends content
+app.get("/game/friends", function (req, res) {
+  res.setHeader("Content-Type", "text/plain");
+  let username = req.user;
+  let p = User.findOne({ username: username }).exec();
+  p.then((user) => {
+    let friends = User.find({username: {$in: user.friends}}).exec();
+      friends.then((friendlist) => {
+        let resolvedList = []
+        for (const f in friendlist) {
+          resolvedList.push([f.username, (f.wins/f.played)*100]);
+        }
+        res.status(200).send(JSON.stringify(resolvedList, null, 4));
+      })
+  }).catch((err) => {
+    console.log(err);
+    res.send("Error fetching users");
+  });
+});
+
 // get the current game
 app.get("/game/getgame", function (req, res) {
   res.setHeader("Content-Type", "text/plain");
