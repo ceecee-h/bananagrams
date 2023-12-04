@@ -276,8 +276,6 @@ app.get("/game/getuser", function (req, res) {
 // get the current game
 app.get("/game/getgame", function (req, res) {
   res.setHeader("Content-Type", "text/plain");
-  let user = req.user;
-  if (!user.inGame) res.status(403).send("INVALID");
 
   let game = Game.findOne({})
     .exec()

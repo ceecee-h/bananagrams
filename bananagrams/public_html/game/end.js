@@ -48,15 +48,18 @@ function getGame() {
     })
     .then((game) => {
       currentGame = JSON.parse(game);
-      setTitle(game);
+      setTitle();
+      for (let user of currentGame.players) {
+        generatePlayer(user);
+      }
     });
 }
 
-/* 'returnLobby()':
+/* 'returnHome()':
 Activates on button click, moving the player back to the
 home page.
 */
-function returnLobby() {
+function returnHome() {
   window.location.replace(`${window.location.origin}/game/home.html`);
 }
 
@@ -65,12 +68,12 @@ Sets the title component of the home page using
 styled bananagram tiles
 game: game object, has the winner or loser of the game
 */
-function setTitle(outcome) {
+function setTitle() {
   let title = document.getElementById("outcome");
-  let userText = outcome.user.toUpperCase();
+  let userText = currentGame.user.toUpperCase();
 
   let status;
-  if (outcome.win) status = "WINS";
+  if (currentGame.win) status = "WINS";
   else status = "LOSES";
 
   let titleHTML = '<div class="row">';
@@ -95,12 +98,43 @@ function styledBananaTile(letter) {
   return `<div class="wrap"><div class="banana_tile"><b>${letter}</b></div></div>`;
 }
 
-/* 'generateFriend()':
+/* 'generatePlayer()':
 Builds the ui component for a friend entry in the friend list table
 
 Takes the friend's username and win rate
 */
-function generateFriend(username, win_rate) {
-  let friendTable = document.getElementById("friends");
-  friendTable.innerHTML += `<tr><td>${username}</td><td>${win_rate}%</td></tr>`;
+function generatePlayer(username) {
+  let playerTable = document.getElementById("players");
+  let row = `<tr><td>${username}</td>`;
+
+  if (!currentUser.friends.includes(username) && !friendRequests.includes(username)) {
+    row += `<td><button id=${username} onclick='sendFriendRequest(this.id)'>Friend</button></td></tr>`;
+  } else {
+    row += `</tr>`;
+  }
+
+  playerTable.innerHTML += row;
+}
+
+function sendFriendRequest(username) {
+  let package = {
+    to: username,
+    from: currentUser.username,
+  };
+
+  let p = fetch("/game/friendrequest", {
+    method: "POST",
+    body: JSON.stringify(package),
+    headers: { "Content-Type": "application/json" },
+  });
+
+  p.then((response) => {
+    let playerTable = document.getElementById("players");
+    playerTable.innerHTML =
+      "<tr><th colspan='2'>Game Players</th></tr><tr><th>Username</th><th>Friend?</th></tr>";
+    getUser();
+    for (let user of currentGame.players) {
+      generatePlayer(user);
+    }
+  });
 }
