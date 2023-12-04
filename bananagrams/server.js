@@ -237,7 +237,9 @@ app.post("/login", function (req, res) {
     let hashed = generateHash(password, salt);
     if (hashed == user.password) {
       let sid = addSession(user.username);
-      res.cookie("login", { username: user.username, sessionID: sid }, { maxAge: 60000 * 2 });
+
+      // create the user's cookie - keep it for up to two hours
+      res.cookie("login", { username: user.username, sessionID: sid }, { maxAge: 60000 * 120 });
 
       res.status(200).send(JSON.stringify(user, null, 4));
     } else {
@@ -403,25 +405,22 @@ app.post("/game/dump", async function (req, res) {
   }
 });
 
-
-app.post("/game/friendrequest", async function (req, res)) {
+app.post("/game/friendrequest", async function (req, res) {
   res.setHeader("Content-Type", "text/plain");
   let from = req.body.from;
   let to = req.body.to;
-  let request = await FriendRequest.findOne({from: to, to: from}).exec();
+  let request = await FriendRequest.findOne({ from: to, to: from }).exec();
   if (request === null) {
-    let newRequest = new FriendRequest({from: from, to: to});
+    let newRequest = new FriendRequest({ from: from, to: to });
     await newRequest.save();
-    res.status(200).send("Request Pending")
+    res.status(200).send("Request Pending");
+  } else {
+    await User.updateOne({ username: from }, { $push: { friends: to } });
+    await User.updateOne({ username: to }, { $push: { friends: from } });
+    await FriendRequest.deleteOne({ from: from, to: to });
+    res.status(200).send("Friend Added");
   }
-  else {
-    await User.updateOne({username: from}, { $push: { friends: to } });
-    await User.updateOne({username: to}, { $push: { friends: from } });
-    await FriendRequest.deleteOne({from: from, to: to});
-    res.status(200).send("Friend Added")
-  }
-}
-
+});
 
 // confirmation in terminal - app is up & listening
 app.listen(port, () => console.log(`App listening at http://localhost:${port}`));

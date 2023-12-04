@@ -15,7 +15,7 @@ It fulfills the 'POST' HTTP requests with 'createUser()' and 'createItem()'.
 var currentUser; // global user variable
 var currentGame;
 setTimeout(getUser, 0);
-//setTimeout(getGame, 0);
+setTimeout(getGame, 0);
 
 /* 'getUser()':
 Called automatically by the server on load.
@@ -48,7 +48,7 @@ function getGame() {
     })
     .then((game) => {
       currentGame = JSON.parse(game);
-      setTitle(game.outcome);
+      setTitle(game);
     });
 }
 
@@ -63,15 +63,15 @@ function returnLobby() {
 /* 'setTitle()':
 Sets the title component of the home page using
 styled bananagram tiles
-outcome: winner or loser of the game
+game: game object, has the winner or loser of the game
 */
 function setTitle(outcome) {
-  let title = document.getElementById("winners");
+  let title = document.getElementById("outcome");
   let userText = outcome.user.toUpperCase();
 
   let status;
-  if (outcome.result == "lost") status = "LOSES";
-  else status = "WINS";
+  if (outcome.win) status = "WINS";
+  else status = "LOSES";
 
   let titleHTML = '<div class="row">';
   for (let i = 0; i < userText.length; i++) {
