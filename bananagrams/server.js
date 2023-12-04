@@ -295,7 +295,7 @@ app.get("/game/pinglobby", function (req, res) {
   let game = Game.findOne({})
     .exec()
     .then((game) => {
-      console.log(game)
+      console.log(game);
       if (game == undefined) res.status(204).send("No game in progress");
       else {
         res.status(200).send(JSON.stringify(game, null, 4));
@@ -311,18 +311,152 @@ app.post("/game/joingame", async function (req, res) {
   let game = await Game.findOne({}).exec();
   if (game === null) {
     let newGame = new Game({
-      tiles: ["A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
-              "A", "B", "B", "B", "C", "C", "C", "D", "D", "D", "D", "D",
-              "D", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
-              "E", "E", "E", "E", "E", "E", "E", "F", "F", "F", "G", "G",
-              "G", "G", "H", "H", "H", "I", "I", "I", "I", "I", "I", "I",
-              "I", "I", "I", "I", "I", "J", "J", "K", "K", "L", "L", "L",
-              "L", "L", "M", "M", "M", "N", "N", "N", "N", "N", "N", "N",
-              "N", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O",
-              "P", "P", "P", "Q", "Q", "R", "R", "R", "R", "R", "R", "R",
-              "R", "R", "S", "S", "S", "S", "S", "S", "T", "T", "T", "T",
-              "T", "T", "T", "T", "T", "U", "U", "U", "U", "U", "U", "V",
-              "V", "V", "W", "W", "W", "X", "X", "Y", "Y", "Y", "Z", "Z"],
+      tiles: [
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "B",
+        "B",
+        "B",
+        "C",
+        "C",
+        "C",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "F",
+        "F",
+        "F",
+        "G",
+        "G",
+        "G",
+        "G",
+        "H",
+        "H",
+        "H",
+        "I",
+        "I",
+        "I",
+        "I",
+        "I",
+        "I",
+        "I",
+        "I",
+        "I",
+        "I",
+        "I",
+        "I",
+        "J",
+        "J",
+        "K",
+        "K",
+        "L",
+        "L",
+        "L",
+        "L",
+        "L",
+        "M",
+        "M",
+        "M",
+        "N",
+        "N",
+        "N",
+        "N",
+        "N",
+        "N",
+        "N",
+        "N",
+        "O",
+        "O",
+        "O",
+        "O",
+        "O",
+        "O",
+        "O",
+        "O",
+        "O",
+        "O",
+        "O",
+        "P",
+        "P",
+        "P",
+        "Q",
+        "Q",
+        "R",
+        "R",
+        "R",
+        "R",
+        "R",
+        "R",
+        "R",
+        "R",
+        "R",
+        "S",
+        "S",
+        "S",
+        "S",
+        "S",
+        "S",
+        "T",
+        "T",
+        "T",
+        "T",
+        "T",
+        "T",
+        "T",
+        "T",
+        "T",
+        "U",
+        "U",
+        "U",
+        "U",
+        "U",
+        "U",
+        "V",
+        "V",
+        "V",
+        "W",
+        "W",
+        "W",
+        "X",
+        "X",
+        "Y",
+        "Y",
+        "Y",
+        "Z",
+        "Z",
+      ],
       players: [user],
     });
     await newGame.save();
@@ -337,13 +471,13 @@ app.post("/game/joingame", async function (req, res) {
   }
 });
 
-app.post("/game/startgame", async function(req, res) {
+app.post("/game/startgame", async function (req, res) {
   res.setHeader("Content-Type", "text/plain");
   let game = await Game.findOne({}).exec();
   if (game === null) {
-    res.status(405).send('How did you do this');
+    res.status(405).send("How did you do this");
   } else {
-    await Game.updateOne({}, {inProgress: true});
+    await Game.updateOne({}, { inProgress: true });
     res.end("Game started");
   }
 });
@@ -430,6 +564,7 @@ app.post("/game/dump", async function (req, res) {
   }
 });
 
+// send a friend request from one user to another
 app.post("/game/friendrequest", async function (req, res) {
   res.setHeader("Content-Type", "text/plain");
   let from = req.body.from;
@@ -445,6 +580,13 @@ app.post("/game/friendrequest", async function (req, res) {
     await FriendRequest.deleteOne({ from: from, to: to });
     res.status(200).send("Friend Added");
   }
+});
+
+// get list of users who the given user has an outgoing friend request to
+app.get("/game/:user/friendrequest", async function (req, res) {
+  let requests = await FriendRequest.find({ from: req.params.user }).exec();
+  let users = await requests.map((request) => request.to);
+  res.status(200).send(users);
 });
 
 // confirmation in terminal - app is up & listening
