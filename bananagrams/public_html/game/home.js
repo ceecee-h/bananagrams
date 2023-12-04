@@ -30,40 +30,43 @@ function getUser() {
     .then((user) => {
       currentUser = JSON.parse(user);
       setTitle(currentUser.username);
+      generateStats(currentUser.wins, currentUser.played);
     });
 }
 
 // TODO: REMOVE ONCE INFO GRABBED FROM SERVER
 window.onload = () => {
   let friendsList = { jonathan: 77, davin: 52, ceecee: 81 };
-  generateLobby("waiting_host", 3);
-  generateStats(12, 50);
   for (const key in friendsList) {
     generateFriend(key, friendsList[key]);
   }
+  generateLobby();
 };
+setInterval(generateLobby, 1000);
 
 // SERVER COMMUNICATION
 /* 'joinGame()':
-Trigger a ping to the server to determine if a user
-can join a game in the lobby
-
-Will call generateLobby.
+Posts a player to the server to join the current game waiting
+in the lobby, or creates one otherwise.
 */
 function joinGame() {
-  // TODO: this
-}
+  let p = fetch("joingame", {
+    method: "POST",
+    body: JSON.stringify({user: currentUser.username}),
+    headers: { "Content-Type": "application/json" },
+  });
 
-/* 'startGame()':
-Trigger the start of a game, moving all players in the
-waiting lobby to the game screen
-*/
-function startGame() {
-  // TODO: this
-  window.location.replace(`${window.location.origin}/game/game.html`)
+  p.then((response) => {
+    return response.status;
+  })
+  .then((status) => {
+    generateLobby();
+  })
+  .catch((error) => {
+    console.log("THERE WAS A PROBLEM");
+    console.log(error);
+  });
 }
-
-// UI GENERATION
 
 /* 'generateLobby()':
 Generate the lobby visuals
@@ -74,25 +77,68 @@ cases:
         - else: current number of players waiting
     - active: display game in progress
 */
-function generateLobby(status, current_players = 0) {
+function generateLobby() {
   let lobby = document.getElementById("lobby");
-  switch (status) {
-    case "open":
+  game = fetch("pinglobby")
+  .then((response) => {
+    return response.text();
+  })
+  .then((game) => {
+    if (game == '') {
+      // no game in progress
       lobby.innerHTML = '<button class="join" onclick="joinGame()">JOIN GAME</button>';
-      return;
-    case "waiting":
-      lobby.innerHTML = `<div class="waiting"><p>waiting for players...</p><p>${current_players}/4</p></div>`;
-      return;
-    case "waiting_host":
-      lobby.innerHTML = `<div class="waiting"><p>waiting for players...</p><p>${current_players}/4</p><button class="join" onclick="startGame()">START GAME</button></div>`;
-      return;
-    case "active":
-      lobby.innerHTML = '<div id="active">GAME IN PROGRESS...</div>';
-      return;
-    default:
-      console.log(`ERROR RESOLVING LOBBY STATUS: ${status}`);
-  }
+    }
+    else {
+      currentGame = JSON.parse(game);
+      // game started!!
+      if (currentGame.inProgress && currentGame.players.includes(currentUser.username)) {
+        window.location.replace(`${window.location.origin}/game/game.html`);
+      }
+      // game present
+      if (currentGame.inProgress) {
+        // game in progress, cannot join
+        lobby.innerHTML = '<div id="active">GAME IN PROGRESS...</div>';
+      }
+      else if (currentGame.players[0] == currentUser.username) {
+        // user is host of lobby
+        lobby.innerHTML = `<div class="waiting"><p>waiting for players...</p><p>${currentGame.players.length}/4</p><button class="join" onclick="startGame()">START GAME</button></div>`;
+      }
+      else if (currentGame.players.includes(currentUser.username)) {
+        // user in lobby
+        lobby.innerHTML = `<div class="waiting"><p>waiting for players...</p><p>${currentGame.players.length}/4</p></div>`;
+      }
+      else {
+        // lobby is open to join
+        lobby.innerHTML = '<button class="join" onclick="joinGame()">JOIN GAME</button>';
+      }
+    }
+  });
 }
+
+/* 'startGame()':
+Trigger the start of a game, moving all players in the
+waiting lobby to the game screen
+*/
+function startGame() {
+  let p = fetch("startgame", {
+    method: "POST",
+    body: JSON.stringify({}),
+    headers: { "Content-Type": "application/json" },
+  });
+
+  p.then((response) => {
+    return response.status;
+  })
+  .then((status) => {
+    generateLobby();
+  })
+  .catch((error) => {
+    console.log("THERE WAS A PROBLEM");
+    console.log(error);
+  });
+}
+
+// UI GENERATION
 
 /* 'setTitle()':
 Sets the title component of the home page using
@@ -147,5 +193,9 @@ function generateStats(wins, total) {
   let total_games = document.getElementById("total_games");
   total_games.innerText = total;
   let win_rate = document.getElementById("win_rate");
-  win_rate.innerText = `${(wins / total) * 100}%`;
+  if (wins == 0 && total == 0) {
+    win_rate.innerText = 'N/A';
+  } else {
+    win_rate.innerText = `${(wins / total) * 100}%`;
+  }
 }

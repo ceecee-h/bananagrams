@@ -73,6 +73,7 @@ var GameSchema = new Schema({
   peel: Boolean,
   win: Boolean,
   user: String,
+  inProgress: Boolean,
 });
 var Game = mongoose.model("Game", GameSchema);
 
@@ -280,7 +281,22 @@ app.get("/game/getgame", function (req, res) {
   let game = Game.findOne({})
     .exec()
     .then((game) => {
-      if (game.length == 0) res.status(404).send("INVALID");
+      if (game == undefined) res.status(404).send("INVALID");
+      else {
+        res.status(200).send(JSON.stringify(game, null, 4));
+      }
+    });
+});
+
+// ping current game status
+app.get("/game/pinglobby", function (req, res) {
+  res.setHeader("Content-Type", "text/plain");
+
+  let game = Game.findOne({})
+    .exec()
+    .then((game) => {
+      console.log(game);
+      if (game == undefined) res.status(204).send("No game in progress");
       else {
         res.status(200).send(JSON.stringify(game, null, 4));
       }
@@ -291,22 +307,156 @@ app.get("/game/getgame", function (req, res) {
 app.post("/game/joingame", async function (req, res) {
   res.setHeader("Content-Type", "text/plain");
   let user = req.body.user;
-
+  console.log(user);
   let game = await Game.findOne({}).exec();
   if (game === null) {
     let newGame = new Game({
-      tiles: ["A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
-              "A", "B", "B", "B", "C", "C", "C", "D", "D", "D", "D", "D",
-              "D", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
-              "E", "E", "E", "E", "E", "E", "E", "F", "F", "F", "G", "G",
-              "G", "G", "H", "H", "H", "I", "I", "I", "I", "I", "I", "I",
-              "I", "I", "I", "I", "I", "J", "J", "K", "K", "L", "L", "L",
-              "L", "L", "M", "M", "M", "N", "N", "N", "N", "N", "N", "N",
-              "N", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O",
-              "P", "P", "P", "Q", "Q", "R", "R", "R", "R", "R", "R", "R",
-              "R", "R", "S", "S", "S", "S", "S", "S", "T", "T", "T", "T",
-              "T", "T", "T", "T", "T", "U", "U", "U", "U", "U", "U", "V",
-              "V", "V", "W", "W", "W", "X", "X", "Y", "Y", "Y", "Z", "Z"],
+      tiles: [
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "B",
+        "B",
+        "B",
+        "C",
+        "C",
+        "C",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "E",
+        "F",
+        "F",
+        "F",
+        "G",
+        "G",
+        "G",
+        "G",
+        "H",
+        "H",
+        "H",
+        "I",
+        "I",
+        "I",
+        "I",
+        "I",
+        "I",
+        "I",
+        "I",
+        "I",
+        "I",
+        "I",
+        "I",
+        "J",
+        "J",
+        "K",
+        "K",
+        "L",
+        "L",
+        "L",
+        "L",
+        "L",
+        "M",
+        "M",
+        "M",
+        "N",
+        "N",
+        "N",
+        "N",
+        "N",
+        "N",
+        "N",
+        "N",
+        "O",
+        "O",
+        "O",
+        "O",
+        "O",
+        "O",
+        "O",
+        "O",
+        "O",
+        "O",
+        "O",
+        "P",
+        "P",
+        "P",
+        "Q",
+        "Q",
+        "R",
+        "R",
+        "R",
+        "R",
+        "R",
+        "R",
+        "R",
+        "R",
+        "R",
+        "S",
+        "S",
+        "S",
+        "S",
+        "S",
+        "S",
+        "T",
+        "T",
+        "T",
+        "T",
+        "T",
+        "T",
+        "T",
+        "T",
+        "T",
+        "U",
+        "U",
+        "U",
+        "U",
+        "U",
+        "U",
+        "V",
+        "V",
+        "V",
+        "W",
+        "W",
+        "W",
+        "X",
+        "X",
+        "Y",
+        "Y",
+        "Y",
+        "Z",
+        "Z",
+      ],
       players: [user],
     });
     await newGame.save();
@@ -318,6 +468,17 @@ app.post("/game/joingame", async function (req, res) {
       await Game.updateOne({}, { $push: { players: user } });
       res.end("Player added");
     }
+  }
+});
+
+app.post("/game/startgame", async function (req, res) {
+  res.setHeader("Content-Type", "text/plain");
+  let game = await Game.findOne({}).exec();
+  if (game === null) {
+    res.status(405).send("How did you do this");
+  } else {
+    await Game.updateOne({}, { inProgress: true });
+    res.end("Game started");
   }
 });
 
