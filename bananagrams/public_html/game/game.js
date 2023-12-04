@@ -25,11 +25,13 @@ window.onload = () => {
                 'P', 'Q', 'R', 'S', 'S', 'T', 'U'])
 };
 
+// verify if you are allowed to peel, returns boolean true if peel is allowed and false if peel is not allowed
 function verifyPeel() {
     let numTiles = 0;
     let userBoard = new Array(21);
     let x;
     let y;
+    let start = [-1, -1];
     // translate to matrix
     for (let i = 0; i < 21; i++) {
         userBoard[i] = new Array(42);
@@ -38,53 +40,127 @@ function verifyPeel() {
             if (containsTile(tile)) {
                 numTiles += 1;
                 userBoard[i][j] = tile.children[0].children[0].innerText;
+                if (start[0] == -1) {
+                    start[0] = i;
+                    start[1] = j;
+                }
             } else {
                 userBoard[i][j] = undefined;
             }
         }
     }
-    if (numTiles == 0) {
+    if (currentTiles.length != 0) {
         window.alert('Place all tiles on the board!')
         return false
     }
+
+    return checkConnectivity(userBoard, start[0], start[1], numTiles);
+}
+
+
+// checks if the tiles in the board are fully connected
+function checkConnectivity(arr, rowStart, colStart, goal) {
+    let seen = [];
     
-}
-
-function _backtrack(board, x, y, cur) {
-    // TODO
-    if (board[x][y] != undefined) {
-        if (_backtrack(board, x+1, y, cur+ board[x][y])) {
-            return true;
+    function helper(row, col) {
+        calls += 1
+        if (row < 0 || row > 20 || col < 0 || col > 41 || arr[row][col] === undefined || seen.includes(`${row},${col}`)) {
+            return 0;
         }
-        if (_backtrack(board, x, y-1, cur+ board[x][y])) {
-            return true;
-        }
-        if (_backtrack(board, x-1, y, board[x][y] + cur)) {
-            return true;
-        }
-        if (_backtrack(board, x, y+1, board[x][y] + cur)) {
-            return true;
-        }
-    } else {
-        words += cur;
-        cur = '';
-        return false;
+        seen.push(`${row},${col}`);
+        let count = 1 + helper(row-1, col);
+        count += helper(row+1, col);
+        count += helper(row, col-1);
+        count += helper(row, col+1);
+        return count;
     }
+    
+    let count = helper(rowStart, colStart);
+    return count == goal;
 }
 
-function isValid(board, x, y) {
-    if ((x >= 21) || (y >= 42)) {
-        return false;
+// makes the list of words on the freakin board
+function makeWordList(board) {
+    let words = [];
+    let curr = "";
+
+    // check horizontally
+    for (let i=0; i<board.length; i++) {
+        addWord();
+        curr = ""
+        for (let j=0; j<board[0].length; j++) {
+           if (board[i][j] === undefined) {
+               addWord();
+               curr = "";
+           }
+           else {
+               curr += board[i][j];
+           }
+        }
     }
-    if (board[x][y] == undefined) {
-        return false;
+
+    // check vertically
+    for (let i=0; i<board[0].length; i++) {
+        addWord();
+        curr = ""
+        for (let j=0; j<board.length; j++) {
+           if (board[j][i] === undefined) {
+               addWord();
+               curr = "";
+           }
+           else {
+               curr += board[j][i];
+           }
+        }
     }
-    return true;
+    
+    function addWord() {
+        if (curr.length > 1) { words.push(curr); }
+    }
+    
+    return words;
 }
 
-function peel_banana() {
+    //let wordList = _backtrack(userBoard, start[0], start[1], "", numTiles);
 
-}
+
+// -- OLD CODE -- here just in case
+
+// function _backtrack(board, x, y, cur, numTiles) {
+//     // TODO
+//     if (board[x][y] != undefined) {
+//         if (_backtrack(board, x+1, y, cur+ board[x][y])) {
+//             return true;
+//         }
+//         if (_backtrack(board, x, y-1, cur+ board[x][y])) {
+//             return true;
+//         }
+//         if (_backtrack(board, x-1, y, board[x][y] + cur)) {
+//             return true;
+//         }
+//         if (_backtrack(board, x, y+1, board[x][y] + cur)) {
+//             return true;
+//         }
+//     } else {
+//         words += cur;
+//         cur = '';
+//         return false;
+//     }
+// }
+
+// function isValid(board, x, y) {
+//     if ((x >= 21) || (y >= 42)) {
+//         return false;
+//     }
+//     if (board[x][y] == undefined) {
+//         return false;
+//     }
+//     return true;
+// }
+
+// function peel_banana() {
+
+// }
 
 function dumpTile() {
     if (selectedTileId == '') {
