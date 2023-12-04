@@ -42,7 +42,7 @@ Sets the global user variable and sets the 'welcome' message to be
 personalized for that user.
 */
 function getGame() {
-  user = fetch("getgame")
+  game = fetch("getgame")
     .then((response) => {
       return response.text();
     })
@@ -50,7 +50,7 @@ function getGame() {
       currentGame = JSON.parse(game);
       setTitle();
       for (let user of currentGame.players) {
-        generatePlayer(user);
+        if (user != currentUser.username) generatePlayer(user);
       }
     });
 }
@@ -60,6 +60,7 @@ Activates on button click, moving the player back to the
 home page.
 */
 function returnHome() {
+  // TODO: add destruction of game object
   window.location.replace(`${window.location.origin}/game/home.html`);
 }
 
@@ -104,16 +105,27 @@ Builds the ui component for a friend entry in the friend list table
 Takes the friend's username and win rate
 */
 function generatePlayer(username) {
-  let playerTable = document.getElementById("players");
-  let row = `<tr><td>${username}</td>`;
+  console.log(currentUser.username);
+  table = fetch(`${currentUser.username}/friendrequest`)
+    .then((response) => {
+      return response.text();
+    })
+    .then((requests) => {
+      let friendRequests = requests;
 
-  if (!currentUser.friends.includes(username) && !friendRequests.includes(username)) {
-    row += `<td><button id=${username} onclick='sendFriendRequest(this.id)'>Friend</button></td></tr>`;
-  } else {
-    row += `</tr>`;
-  }
+      let playerTable = document.getElementById("players");
+      let row = `<tr><td>${username}</td>`;
 
-  playerTable.innerHTML += row;
+      if (!currentUser.friends.includes(username) && !friendRequests.includes(username)) {
+        row += `<td><button id=${username} class="friendRequest" onclick='sendFriendRequest(this.id)'>Friend</button></td></tr>`;
+      } else if (friendRequests.includes(username)) {
+        row += `<td><i>Request Pending</i></td></tr>`;
+      } else {
+        row += `<td><strong>Friends</strong></td></tr>`;
+      }
+
+      playerTable.innerHTML += row;
+    });
 }
 
 function sendFriendRequest(username) {
@@ -134,7 +146,7 @@ function sendFriendRequest(username) {
       "<tr><th colspan='2'>Game Players</th></tr><tr><th>Username</th><th>Friend?</th></tr>";
     getUser();
     for (let user of currentGame.players) {
-      generatePlayer(user);
+      if (user != currentUser.username) generatePlayer(user);
     }
   });
 }
