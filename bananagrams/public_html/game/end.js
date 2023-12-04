@@ -15,7 +15,7 @@ It fulfills the 'POST' HTTP requests with 'createUser()' and 'createItem()'.
 var currentUser; // global user variable
 var currentGame;
 setTimeout(getUser, 0);
-//setTimeout(getGame, 0);
+setTimeout(getGame, 0);
 
 /* 'getUser()':
 Called automatically by the server on load.
@@ -42,36 +42,40 @@ Sets the global user variable and sets the 'welcome' message to be
 personalized for that user.
 */
 function getGame() {
-  user = fetch("getgame")
+  game = fetch("getgame")
     .then((response) => {
       return response.text();
     })
     .then((game) => {
       currentGame = JSON.parse(game);
-      setTitle(game.outcome);
+      setTitle();
+      for (let user of currentGame.players) {
+        if (user != currentUser.username) generatePlayer(user);
+      }
     });
 }
 
-/* 'returnLobby()':
+/* 'returnHome()':
 Activates on button click, moving the player back to the
 home page.
 */
-function returnLobby() {
+function returnHome() {
+  // TODO: add destruction of game object
   window.location.replace(`${window.location.origin}/game/home.html`);
 }
 
 /* 'setTitle()':
 Sets the title component of the home page using
 styled bananagram tiles
-outcome: winner or loser of the game
+game: game object, has the winner or loser of the game
 */
-function setTitle(outcome) {
-  let title = document.getElementById("winners");
-  let userText = outcome.user.toUpperCase();
+function setTitle() {
+  let title = document.getElementById("outcome");
+  let userText = currentGame.user.toUpperCase();
 
   let status;
-  if (outcome.result == "lost") status = "LOSES";
-  else status = "WINS";
+  if (currentGame.win) status = "WINS";
+  else status = "LOSES";
 
   let titleHTML = '<div class="row">';
   for (let i = 0; i < userText.length; i++) {
@@ -95,12 +99,54 @@ function styledBananaTile(letter) {
   return `<div class="wrap"><div class="banana_tile"><b>${letter}</b></div></div>`;
 }
 
-/* 'generateFriend()':
+/* 'generatePlayer()':
 Builds the ui component for a friend entry in the friend list table
 
 Takes the friend's username and win rate
 */
-function generateFriend(username, win_rate) {
-  let friendTable = document.getElementById("friends");
-  friendTable.innerHTML += `<tr><td>${username}</td><td>${win_rate}%</td></tr>`;
+function generatePlayer(username) {
+  console.log(currentUser.username);
+  table = fetch(`${currentUser.username}/friendrequest`)
+    .then((response) => {
+      return response.text();
+    })
+    .then((requests) => {
+      let friendRequests = requests;
+
+      let playerTable = document.getElementById("players");
+      let row = `<tr><td>${username}</td>`;
+
+      if (!currentUser.friends.includes(username) && !friendRequests.includes(username)) {
+        row += `<td><button id=${username} class="friendRequest" onclick='sendFriendRequest(this.id)'>Friend</button></td></tr>`;
+      } else if (friendRequests.includes(username)) {
+        row += `<td><i>Request Pending</i></td></tr>`;
+      } else {
+        row += `<td><strong>Friends</strong></td></tr>`;
+      }
+
+      playerTable.innerHTML += row;
+    });
+}
+
+function sendFriendRequest(username) {
+  let package = {
+    to: username,
+    from: currentUser.username,
+  };
+
+  let p = fetch("/game/friendrequest", {
+    method: "POST",
+    body: JSON.stringify(package),
+    headers: { "Content-Type": "application/json" },
+  });
+
+  p.then((response) => {
+    let playerTable = document.getElementById("players");
+    playerTable.innerHTML =
+      "<tr><th colspan='2'>Game Players</th></tr><tr><th>Username</th><th>Friend?</th></tr>";
+    getUser();
+    for (let user of currentGame.players) {
+      if (user != currentUser.username) generatePlayer(user);
+    }
+  });
 }

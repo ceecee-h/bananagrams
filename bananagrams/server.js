@@ -238,7 +238,9 @@ app.post("/login", function (req, res) {
     let hashed = generateHash(password, salt);
     if (hashed == user.password) {
       let sid = addSession(user.username);
-      res.cookie("login", { username: user.username, sessionID: sid }, { maxAge: 60000 * 2 });
+
+      // create the user's cookie - keep it for up to two hours
+      res.cookie("login", { username: user.username, sessionID: sid }, { maxAge: 60000 * 120 });
 
       res.status(200).send(JSON.stringify(user, null, 4));
     } else {
@@ -275,8 +277,6 @@ app.get("/game/getuser", function (req, res) {
 // get the current game
 app.get("/game/getgame", function (req, res) {
   res.setHeader("Content-Type", "text/plain");
-  let user = req.user;
-  if (!user.inGame) res.status(403).send("INVALID");
 
   let game = Game.findOne({})
     .exec()
@@ -295,7 +295,7 @@ app.get("/game/pinglobby", function (req, res) {
   let game = Game.findOne({})
     .exec()
     .then((game) => {
-      console.log(game)
+      console.log(game);
       if (game == undefined) res.status(204).send("No game in progress");
       else {
         res.status(200).send(JSON.stringify(game, null, 4));
@@ -337,13 +337,13 @@ app.post("/game/joingame", async function (req, res) {
   }
 });
 
-app.post("/game/startgame", async function(req, res) {
+app.post("/game/startgame", async function (req, res) {
   res.setHeader("Content-Type", "text/plain");
   let game = await Game.findOne({}).exec();
   if (game === null) {
-    res.status(405).send('How did you do this');
+    res.status(405).send("How did you do this");
   } else {
-    await Game.updateOne({}, {inProgress: true});
+    await Game.updateOne({}, { inProgress: true });
     res.end("Game started");
   }
 });
@@ -430,30 +430,27 @@ app.post("/game/dump", async function (req, res) {
   }
 });
 
-
 // send a friend request from one user to another
 app.post("/game/friendrequest", async function (req, res) {
   res.setHeader("Content-Type", "text/plain");
   let from = req.body.from;
   let to = req.body.to;
-  let request = await FriendRequest.findOne({from: to, to: from}).exec();
+  let request = await FriendRequest.findOne({ from: to, to: from }).exec();
   if (request === null) {
-    let newRequest = new FriendRequest({from: from, to: to});
+    let newRequest = new FriendRequest({ from: from, to: to });
     await newRequest.save();
-    res.status(200).send("Request Pending")
-  }
-  else {
-    await User.updateOne({username: from}, { $push: { friends: to } });
-    await User.updateOne({username: to}, { $push: { friends: from } });
-    await FriendRequest.deleteOne({from: from, to: to});
-    res.status(200).send("Friend Added")
+    res.status(200).send("Request Pending");
+  } else {
+    await User.updateOne({ username: from }, { $push: { friends: to } });
+    await User.updateOne({ username: to }, { $push: { friends: from } });
+    await FriendRequest.deleteOne({ from: from, to: to });
+    res.status(200).send("Friend Added");
   }
 });
 
-
 // get list of users who the given user has an outgoing friend request to
 app.get("/game/:user/friendrequest", async function (req, res) {
-  let requests = await FriendRequest.find({from: req.params.user}).exec();
+  let requests = await FriendRequest.find({ from: req.params.user }).exec();
   let users = await requests.map((request) => request.to);
   res.status(200).send(users);
 });
