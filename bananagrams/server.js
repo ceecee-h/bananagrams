@@ -431,6 +431,7 @@ app.post("/game/dump", async function (req, res) {
 });
 
 
+// send a friend request from one user to another
 app.post("/game/friendrequest", async function (req, res) {
   res.setHeader("Content-Type", "text/plain");
   let from = req.body.from;
@@ -449,6 +450,13 @@ app.post("/game/friendrequest", async function (req, res) {
   }
 });
 
+
+// get list of users who the given user has an outgoing friend request to
+app.get("/game/:user/friendrequest", async function (req, res) {
+  let requests = await FriendRequest.find({from: req.params.user}).exec();
+  let users = await requests.map((request) => request.to);
+  res.status(200).send(users);
+});
 
 // confirmation in terminal - app is up & listening
 app.listen(port, () => console.log(`App listening at http://localhost:${port}`));
