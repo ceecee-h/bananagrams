@@ -30,46 +30,24 @@ The logic for the layout specifications are located in 'login.css'.
     <body>
         <div id="content">
             <div id="game_panel">
-                <div id="winners"></div>
+                <div id="outcome"></div>
                 <div id="return">
-                    <button onclick="returnLobby()">Return to Lobby</button>
+                    <button class="returnHome" onclick="returnHome()">Return to
+                        Lobby</button>
                 </div>
             </div>
             <div id="stat_panel">
                 <div class="container">
-                    <table id="user_stats">
+                    <table id="players">
                         <tr>
                             <th colspan="2">Game Players</th>
-                        </tr>
-                        <tr>
-                            <td>Wins:</td>
-                            <td id="win_count">5</td>
-                        </tr>
-                        <tr>
-                            <td>Losses:</td>
-                            <td id="lose_count">10</td>
-                        </tr>
-                        <tr>
-                            <td>Games Played:</td>
-                            <td id="total_games">15</td>
-                        </tr>
-                        <tr>
-                            <td>Win Rate:</td>
-                            <td id="win_rate">15</td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="container">
-                    <table id="friends">
-                        <tr>
-                            <th colspan="2">Friends List</th>
                         </tr>
                         <tr>
                             <th>
                                 Username
                             </th>
                             <th>
-                                Win Rate
+                                Friend?
                             </th>
                         </tr>
                     </table>
