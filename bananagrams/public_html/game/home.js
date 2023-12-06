@@ -50,7 +50,10 @@ function getFriendList() {
     .then((friendlist) => {
       let friends = JSON.parse(friendlist);
       for (let i = 0; i < currentUser.friends.length; i++) {
-        generateFriend(friends[i].username, friends[i].wins);
+        if (friends[i].wins == 0 && friends[i].played == 0) {
+          generateFriend(friends[i].username, 'N/A');
+        }
+        else generateFriend(friends[i].username, `${friends[i].wins}%`);
       }
     });
 }
@@ -199,7 +202,7 @@ Takes the friend's username and win rate
 */
 function generateFriend(username, win_rate) {
   let friendTable = document.getElementById("friends");
-  friendTable.innerHTML += `<tr><td>${username}</td><td>${win_rate}%</td></tr>`;
+  friendTable.innerHTML += `<tr><td>${username}</td><td>${win_rate}</td></tr>`;
 }
 
 /* 'generateStats()':
