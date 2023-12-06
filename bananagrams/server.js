@@ -369,7 +369,7 @@ app.post("/game/joingame", async function (req, res) {
       players: [user],
       peel: false,
       win: false,
-      user: '',
+      user: "",
       inProgress: false,
     });
     await newGame.save();
@@ -400,7 +400,7 @@ app.post("/game/startgame", async function (req, res) {
         playerTiles.push(await getTile());
       }
       console.log(playerTiles);
-      await User.updateOne({ username: player }, { inGame: true, tiles: playerTiles}).exec();
+      await User.updateOne({ username: player }, { inGame: true, tiles: playerTiles }).exec();
     }
     res.end("Game started");
   }
@@ -414,7 +414,7 @@ app.get("/game/destroygame", async function (req, res) {
   } else {
     let players = game.players;
     for (let player of players) {
-      await User.updateOne({ username: player }, { inGame: false, tiles: []}).exec();
+      await User.updateOne({ username: player }, { inGame: false, tiles: [] }).exec();
     }
     await Game.deleteOne({}).exec();
     res.end("Game deleted");
@@ -427,7 +427,7 @@ async function getTile() {
   let index = Math.floor(Math.random() * game.tiles.length);
   let letter = game.tiles[index];
   game.tiles.splice(index, 1);
-  await Game.updateOne({}, {tiles: game.tiles}).exec();
+  await Game.updateOne({}, { tiles: game.tiles }).exec();
   return letter;
 }
 
@@ -476,9 +476,10 @@ app.post("/game/peel", async function (req, res) {
       }
     }
   } else {
-    console.log("peel got")
+    console.log("peel got");
     await Game.updateOne({}, { peel: true });
-    setTimeout(() => { // - untested fix for unlimited peel ability
+    setTimeout(() => {
+      // - untested fix for unlimited peel ability
       Game.updateOne({}, { peel: false });
     }, 1000);
   }
@@ -489,10 +490,10 @@ app.get("/game/ping/:user", async function (req, res) {
   res.setHeader("Content-Type", "text/plain");
   let user = req.params.user;
   let game = await Game.findOne({}).exec();
-  if (game.peel) {
+  if (game && game.peel) {
     let peel = await getTile();
     let tile = { tile: peel };
-    await User.updateOne({username: user}, {tiles: {$push: peel}});
+    await User.updateOne({ username: user }, { tiles: { $push: peel } });
     res.status(200).send(JSON.stringify(tile, null, 4));
   }
 });
@@ -513,7 +514,7 @@ app.post("/game/dump/:user", async function (req, res) {
     let tile3 = await getTile();
     let newTiles = { tiles: [tile1, tile2, tile3] };
     await Game.updateOne({}, { $push: { tiles: dump } });
-    await User.updateOne({username: user}, {tiles: {$push: [tile1, tile2, tile3]}});
+    await User.updateOne({ username: user }, { tiles: { $push: [tile1, tile2, tile3] } });
     res.status(200).send(JSON.stringify(newTiles, null, 4));
   }
 });

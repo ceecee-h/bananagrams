@@ -51,9 +51,8 @@ function getFriendList() {
       let friends = JSON.parse(friendlist);
       for (let i = 0; i < currentUser.friends.length; i++) {
         if (friends[i].wins == 0 && friends[i].played == 0) {
-          generateFriend(friends[i].username, 'N/A');
-        }
-        else generateFriend(friends[i].username, `${friends[i].wins}%`);
+          generateFriend(friends[i].username, "N/A");
+        } else generateFriend(friends[i].username, `${friends[i].wins}%`);
       }
     });
 }
@@ -166,7 +165,7 @@ styled bananagram tiles
 username: username of user
 */
 function setTitle(username) {
-  let title = document.getElementById("welcome_user");
+  let title = document.getElementById("welcomeUser");
   let userText = username.toUpperCase();
   let welcome = "WELCOME";
   let titleHTML = '<div class="row">';
@@ -188,7 +187,7 @@ purposes only on the home page.
 Takes a letter and returns the html needed to embed a tile.
 */
 function styledBananaTile(letter) {
-  return `<div class="wrap"><div class="banana_tile"><b>${letter}</b></div></div>`;
+  return `<div class="wrap"><div class="bananaTile"><b>${letter}</b></div></div>`;
 }
 
 /* 'generateFriend()':
