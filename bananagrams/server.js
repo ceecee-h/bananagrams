@@ -389,8 +389,16 @@ app.post("/game/peel", async function (req, res) {
       let words = req.body.words;
       let user = req.body.user;
       let valid = checkValid(words);
-      //if valid is true: this player wins
-      //if valid is false: every other player wins
+      await Game.updateOne({}, { win: valid });
+      await Game.updateOne({}, { user: user});
+      let players = game.players;
+      for (i in players) {
+        let player = players[i];
+        await User.updateOne({ username: player }, {$inc { played: 1 }});
+        if ((player == user && valid) || (player != user && !valid)) {
+          await User.updateOne({ username: player }, {$inc { wins: 1 }});
+        }
+      }
     } else {
       await Game.updateOne({}, { peel: true });
       setInterval(() => {
