@@ -121,7 +121,7 @@ function removeSessions() {
       });
     }
   }
-  console.log(sessions);
+  //console.log(sessions);
 }
 
 // check for session status every 2 seconds
@@ -367,6 +367,10 @@ app.post("/game/joingame", async function (req, res) {
               "T", "T", "T", "T", "T", "U", "U", "U", "U", "U", "U", "V",
               "V", "V", "W", "W", "W", "X", "X", "Y", "Y", "Y", "Z", "Z"],
       players: [user],
+      peel: false,
+      win: false,
+      user: '',
+      inProgress: false,
     });
     await newGame.save();
     res.end("Game created");
@@ -388,13 +392,15 @@ app.post("/game/startgame", async function (req, res) {
   } else {
     // game in progress
     await Game.updateOne({}, { inProgress: true });
+    // distribute tiles
     let players = game.players;
     for (let player of players) {
       let playerTiles = [];
       for (let i = 0; i < 21; i++) {
-        playerTiles.push(getTile());
+        playerTiles.push(await getTile());
       }
-      await User.updateOne({ username: player }, { inGame: true }, {tiles: playerTiles}).exec();
+      console.log(playerTiles);
+      await User.updateOne({ username: player }, { inGame: true, tiles: playerTiles}).exec();
     }
     res.end("Game started");
   }
@@ -408,7 +414,7 @@ app.get("/game/destroygame", async function (req, res) {
   } else {
     let players = game.players;
     for (let player of players) {
-      await User.updateOne({ username: player }, { inGame: false }, {tiles: []}).exec();
+      await User.updateOne({ username: player }, { inGame: false, tiles: []}).exec();
     }
     await Game.deleteOne({}).exec();
     res.end("Game deleted");
@@ -420,8 +426,8 @@ async function getTile() {
   let game = await Game.findOne({}).exec();
   let index = Math.floor(Math.random() * game.tiles.length);
   let letter = game.tiles[index];
-  let newArr = game.tiles.splice(index, 1);
-  await Game.updateOne({}, { tiles: newArr });
+  game.tiles.splice(index, 1);
+  await Game.updateOne({}, {tiles: game.tiles}).exec();
   return letter;
 }
 
@@ -451,23 +457,23 @@ function checkValid(words) {
 // puts a peel into the queue
 app.post("/game/peel", async function (req, res) {
   let game = await Game.findOne({});
-  if (!game.peel) {
-    if (game.tiles.length < game.players.length) {
-      let words = req.body.words;
-      let user = req.body.user;
-      let valid = checkValid(words);
-      await Game.updateOne({}, { win: valid });
-      await Game.updateOne({}, { user: user });
-      let players = game.players;
-      for (i in players) {
-        let player = players[i];
-        await User.updateOne({ username: player }, { $inc: { played: 1 } });
-        if ((player == user && valid) || (player != user && !valid)) {
-          await User.updateOne({ username: player }, { $inc: { wins: 1 } });
-        }
+
+  if (game.tiles.length < game.players.length) {
+    let words = req.body.words;
+    let user = req.body.user;
+    let valid = checkValid(words);
+    await Game.updateOne({}, { win: valid });
+    await Game.updateOne({}, { user: user });
+    let players = game.players;
+    for (i in players) {
+      let player = players[i];
+      await User.updateOne({ username: player }, { $inc: { played: 1 } });
+      if ((player == user && valid) || (player != user && !valid)) {
+        await User.updateOne({ username: player }, { $inc: { wins: 1 } });
       }
     }
   } else {
+    console.log("peel got")
     await Game.updateOne({}, { peel: true });
     setInterval(() => {
       Game.updateOne({}, { peel: false });
@@ -476,7 +482,7 @@ app.post("/game/peel", async function (req, res) {
 });
 
 // called on every tick to update the game state
-app.post("/game/ping/:user", async function (req, res) {
+app.get("/game/ping/:user", async function (req, res) {
   res.setHeader("Content-Type", "text/plain");
   let user = req.params.user;
   let game = await Game.findOne({}).exec();

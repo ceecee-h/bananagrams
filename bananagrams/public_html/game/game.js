@@ -20,6 +20,7 @@ var words = [];
 
 setTimeout(getUser, 0);
 setTimeout(checkUser, 0);
+setInterval(ping, 1000);
 
 // TODO: REMOVE ONCE INFO GRABBED FROM SERVER
 window.onload = () => {
@@ -69,14 +70,32 @@ function returnHome() {
 
 // ping server every second for game status
 function ping() {
-    pingg = fetch(`ping/${currentUser.username}`)
+    let pingg = fetch(`ping/${currentUser.username}`)
         .then((response) => {
             return response.text();
         })
         .then((pingg) => {
-            newTiles = JSON.parse(pingg);
+            let newTiles = JSON.parse(pingg);
+            console.log(newTiles);
             addToPool([newTiles['tile']]);
         })
+}
+
+// peels
+function peelBanana() {
+    console.log('peel');
+    if (true) {//(verifyPeel()) {
+        let package = {user: currentUser.username}
+        let peel = fetch("peel", {
+            method: "POST",
+            body: JSON.stringify(package),
+            headers: { "Content-Type": "application/json" },
+          });
+        
+          peel.then((response) => {
+            return response.text();
+          })
+    }
 }
 
 // verify if you are allowed to peel, returns boolean true if peel is allowed and false if peel is not allowed
