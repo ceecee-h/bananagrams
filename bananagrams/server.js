@@ -35,7 +35,7 @@ app.use(cookieParser());
 
 app.use("/game/", authenticate);
 app.get("/game/", (req, res, next) => {
-  console.log("another");
+  //console.log("another");
   next();
 });
 app.use(express.static("public_html")); // static
@@ -135,8 +135,8 @@ currently in an authenticated session. Uses the
 */
 function authenticate(req, res, next) {
   let c = req.cookies;
-  console.log("auth request:");
-  console.log(req.cookies);
+  // console.log("auth request:");
+  // console.log(req.cookies);
   if (c != undefined && c.login != undefined) {
     if (
       sessions[c.login.username] != undefined &&
@@ -460,6 +460,7 @@ function checkValid(words) {
 // puts a peel into the queue
 app.post("/game/peel", async function (req, res) {
   let game = await Game.findOne({});
+  console.log("i'm so in here");
 
   if (game.tiles.length < game.players.length) {
     let words = req.body.words;
@@ -478,10 +479,10 @@ app.post("/game/peel", async function (req, res) {
   } else {
     console.log("peel got");
     await Game.updateOne({}, { peel: true });
-    setTimeout(() => {
-      // - untested fix for unlimited peel ability
-      Game.updateOne({}, { peel: false });
-    }, 1000);
+    // setTimeout(() => {
+    //   // - untested fix for unlimited peel ability
+    //   Game.updateOne({}, { peel: false });
+    // }, 1000);
   }
 });
 

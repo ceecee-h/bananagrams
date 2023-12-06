@@ -88,7 +88,7 @@ function peelBanana() {
   if (verifyPeel()) {
     
     let package = { user: currentUser.username };
-    let peel = fetch("/game/peel", {
+    let peel = fetch("peel", {
       method: "POST",
       body: JSON.stringify(package),
       headers: { "Content-Type": "application/json" },
