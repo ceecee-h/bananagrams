@@ -12,14 +12,20 @@ It allows the client to create/submit their own users & items.
 It fulfills the 'POST' HTTP requests with 'createUser()' and 'createItem()'.
 */
 
+var currentUser;
 var currentTiles = [];
 var selectedTileId = "";
 var count = 0;
 var words = [];
 
-var currentUser; // global user variable
 setTimeout(getUser, 0);
 setTimeout(checkUser, 0);
+setInterval(ping, 1000);
+
+// TODO: REMOVE ONCE INFO GRABBED FROM SERVER
+window.onload = () => {
+    generateGrid();
+}
 
 /* 'getUser()':
 Called automatically by the server on load.
@@ -29,13 +35,14 @@ Sets the global user variable and sets the 'welcome' message to be
 personalized for that user.
 */
 function getUser() {
-  user = fetch("getuser")
-    .then((response) => {
-      return response.text();
-    })
-    .then((user) => {
-      currentUser = JSON.parse(user);
-    });
+    user = fetch("getuser")
+      .then((response) => {
+        return response.text();
+      })
+      .then((user) => {
+        currentUser = JSON.parse(user);
+        addToPool(currentUser.tiles);
+      });
 }
 
 /* 'checkUser()':
@@ -61,13 +68,35 @@ function returnHome() {
   window.location.replace(`${window.location.origin}/game/home.html`);
 }
 
-// TODO: REMOVE ONCE INFO GRABBED FROM SERVER
-window.onload = () => {
-  generateGrid();
-addToPool(['A', 'A', 'B', 'C', 'E', 'E', 'E', 
-                'F', 'H', 'I', 'L', 'K', 'M', 'M',
-                'P', 'Q', 'R', 'S', 'S', 'T', 'U'])
-};
+// ping server every second for game status
+function ping() {
+    let pingg = fetch(`ping/${currentUser.username}`)
+        .then((response) => {
+            return response.text();
+        })
+        .then((pingg) => {
+            let newTiles = JSON.parse(pingg);
+            console.log(newTiles);
+            addToPool([newTiles['tile']]);
+        })
+}
+
+// peels
+function peelBanana() {
+    console.log('peel');
+    if (true) {//(verifyPeel()) {
+        let package = {user: currentUser.username}
+        let peel = fetch("peel", {
+            method: "POST",
+            body: JSON.stringify(package),
+            headers: { "Content-Type": "application/json" },
+          });
+        
+          peel.then((response) => {
+            return response.text();
+          })
+    }
+}
 
 // verify if you are allowed to peel, returns boolean true if peel is allowed and false if peel is not allowed
 function verifyPeel() {
@@ -172,16 +201,29 @@ function makeWordList(board) {
 }
 
 function dumpTile() {
-  if (selectedTileId == "") {
-    window.alert("Please select a tile to dump first!");
-  } else {
-    // TODO: add server call
-    let newTiles = ["E", "X", "Z"];
-    let oldTile = document.getElementById(selectedTileId);
-    oldTile.parentElement.innerHTML = "";
-    selectedTileId = "";
-    addToPool(newTiles);
-  }
+    if (selectedTileId == '') {
+        window.alert('Please select a tile to dump first!')
+    }
+    else {
+        let oldTile = document.getElementById(selectedTileId);
+        let newTiles = fetch(`dump/${currentUser.username}`, {
+            method: 'POST',
+            body: JSON.stringify({tile: oldTile.innerText}),
+            headers: { "Content-Type": "application/json" },
+        })
+        .then((response) => {
+            newTiles = response.text();
+        })
+        .then((newTiles) => {
+            let tiles = JSON.parse(newTiles);
+            addToPool(tiles[tiles]);
+        })
+        .catch((err) => window.alert(err));
+        //let newTiles = ['E', 'X', 'Z'];
+        oldTile.parentElement.innerHTML = "";
+        selectedTileId = '';
+        //addToPool(newTiles);
+    }
 }
 
 function addToPool(tiles) {
