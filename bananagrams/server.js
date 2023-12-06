@@ -475,7 +475,7 @@ app.post("/game/peel", async function (req, res) {
   } else {
     console.log("peel got")
     await Game.updateOne({}, { peel: true });
-    setInterval(() => {
+    setTimeout(() => { // - untested fix for unlimited peel ability
       Game.updateOne({}, { peel: false });
     }, 1000);
   }
