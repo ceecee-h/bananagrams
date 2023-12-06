@@ -409,11 +409,12 @@ app.post("/game/peel", async function (req, res) {
       let players = game.players;
       for (i in players) {
         let player = players[i];
-        await User.updateOne({ username: player }, {$inc { played: 1 }});
+        await User.updateOne({ username: player }, {$inc: { played: 1 }});
         if ((player == user && valid) || (player != user && !valid)) {
-          await User.updateOne({ username: player }, {$inc { wins: 1 }});
+          await User.updateOne({ username: player }, {$inc: { wins: 1 }});
         }
       }
+    }
     } else {
       await Game.updateOne({}, { peel: true });
       setInterval(() => {
@@ -421,7 +422,7 @@ app.post("/game/peel", async function (req, res) {
       }, 1000);
     }
   }
-});
+);
 
 // called on every tick to update the game state
 app.post("/game/ping", async function (req, res) {
