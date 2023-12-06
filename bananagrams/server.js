@@ -275,18 +275,14 @@ app.get("/game/getuser", function (req, res) {
 });
 
 // get friends content
-app.get("/game/friends", function (req, res) {
+app.get("/game/friends/:user", function (req, res) {
   res.setHeader("Content-Type", "text/plain");
-  let username = req.user;
+  let username = req.params.user;
   let p = User.findOne({ username: username }).exec();
   p.then((user) => {
     let friends = User.find({username: {$in: user.friends}}).exec();
       friends.then((friendlist) => {
-        let resolvedList = []
-        for (const f in friendlist) {
-          resolvedList.push([f.username, (f.wins/f.played)*100]);
-        }
-        res.status(200).send(JSON.stringify(resolvedList, null, 4));
+        res.status(200).send(JSON.stringify(friendlist, null, 4));
       })
   }).catch((err) => {
     console.log(err);
@@ -315,7 +311,6 @@ app.get("/game/pinglobby", function (req, res) {
   let game = Game.findOne({})
     .exec()
     .then((game) => {
-      console.log(game);
       if (game == undefined) res.status(204).send("No game in progress");
       else {
         res.status(200).send(JSON.stringify(game, null, 4));
