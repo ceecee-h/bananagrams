@@ -418,7 +418,10 @@ async function getTile() {
 let validWords = () => {
   const wordList = [];
 
-  const data = fs.readFileSync("/public_html/game/dictionary.txt", { encoding: "utf8", flag: "r" });
+  const data = fs.readFileSync("/public_html/game/assets/dictionary.txt", {
+    encoding: "utf8",
+    flag: "r",
+  });
 
   let words = data.split("\n");
   for (let i in words) {

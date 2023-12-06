@@ -2,11 +2,10 @@
 Name: Davin Bush, CeeCee Hill, Jonathan Houge
 Course: CSC 337 - Web Programming
 Assignment: Final Project - Bananagrams
-File: home.css
+File: end.css
 Date: 11/13/23
 
--- STILL OOSTA, EDIT WHEN PAGE IS DONE --
-This file is the 'login.css' for the 'Bananagrams' web application.
+This file is the 'end.css' for the 'Bananagrams' web application.
 It gives 'index_html' the required styling to give the client a
 pleasant interface to interact with for dealing with account creation
 and login, including font-size, element locations, etc.
@@ -68,7 +67,6 @@ body {
   color: rgb(59, 31, 24);
 }
 
-
 /* left side content */
 #stat_panel {
   flex: 1;
@@ -108,7 +106,6 @@ table {
   flex: 1;
   width: 100%;
 }
-
 
 .row {
   display: flex;
