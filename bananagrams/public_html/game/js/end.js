@@ -2,11 +2,11 @@
 Name: Davin Bush, CeeCee Hill, Jonathan Houge
 Course: CSC 337 - Web Programming
 Assignment: Final Project - Bananagrams
-File: login.js
+File: index.js
 Date: 11/13/23
 
 -- STILL OOSTA, EDIT WHEN PAGE IS DONE --
-This is 'login.js', the client javascript file for account handling within 'Bananagrams'.
+This is 'index.js', the client javascript file for account handling within 'Bananagrams'.
 The HTML page 'index.html' utilizes this file.
 It allows the client to create/submit their own users & items.
 It fulfills the 'POST' HTTP requests with 'createUser()' and 'createItem()'.
