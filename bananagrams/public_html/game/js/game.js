@@ -74,18 +74,20 @@ function ping() {
     .then((response) => {
       return response.text();
     })
-    .then((pingg) => {
-      let newTiles = JSON.parse(pingg);
-      console.log(newTiles);
-      addToPool([newTiles["tile"]]);
+    .then((data) => {
+      let newTiles = JSON.parse(data);
+      console.log("ping'd success")
+      if (newTiles != "") {
+          console.log(newTiles);
+          addToPool([newTiles["tile"]]);
+      }
     });
 }
 
 // peels
 function peelBanana() {
-  console.log("peel");
-  console.log(currentTiles);
   if (verifyPeel()) {
+    console.log("sending peel")
     
     let package = { user: currentUser.username };
     let peel = fetch("peel", {
@@ -95,6 +97,7 @@ function peelBanana() {
     });
 
     peel.then((response) => {
+      console.log("Howdy")
       return response.text();
     });
   }
@@ -124,8 +127,7 @@ function verifyPeel() {
       }
     }
   }
-  console.log(userBoard);
-  console.log(numTiles);
+
   if (currentTiles.length != numTiles) {
     window.alert("Place all tiles on the board!");
     return false;
@@ -136,6 +138,7 @@ function verifyPeel() {
     window.alert("Connect your grid!");
     return false;
   }
+  console.log("end of peel")
   return true;
 }
 

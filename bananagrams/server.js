@@ -121,11 +121,11 @@ function removeSessions() {
       });
     }
   }
-  //console.log(sessions);
+  console.log(sessions);
 }
 
-// check for session status every 2 seconds
-setInterval(removeSessions, 2000);
+// check for session status every 5 seconds
+setInterval(removeSessions, 5000);
 
 /* 'authenticate()':
 Redirects a user to the login page if they are not
@@ -399,7 +399,6 @@ app.post("/game/startgame", async function (req, res) {
       for (let i = 0; i < 21; i++) {
         playerTiles.push(await getTile());
       }
-      console.log(playerTiles);
       await User.updateOne({ username: player }, { inGame: true, tiles: playerTiles }).exec();
     }
     res.end("Game started");
@@ -457,12 +456,14 @@ function checkValid(words) {
   return true;
 }
 
+var peelers = 0;
 // puts a peel into the queue
 app.post("/game/peel", async function (req, res) {
   let game = await Game.findOne({});
-  console.log("i'm so in here");
+  console.log("peel call\n");
 
   if (game.tiles.length < game.players.length) {
+    console.log("bananaz")
     let words = req.body.words;
     let user = req.body.user;
     let valid = checkValid(words);
@@ -477,25 +478,33 @@ app.post("/game/peel", async function (req, res) {
       }
     }
   } else {
-    console.log("peel got");
+    console.log("peeling");
     await Game.updateOne({}, { peel: true });
-    // setTimeout(() => {
-    //   // - untested fix for unlimited peel ability
-    //   Game.updateOne({}, { peel: false });
-    // }, 1000);
   }
 });
 
 // called on every tick to update the game state
 app.get("/game/ping/:user", async function (req, res) {
   res.setHeader("Content-Type", "text/plain");
+  console.log("ping\n");
   let user = req.params.user;
   let game = await Game.findOne({}).exec();
-  if (game && game.peel) {
+  console.log(peelers)
+  if (game && game.peel && peelers <= game.players.length) {
     let peel = await getTile();
-    let tile = { tile: peel };
+    let tile = { "tile": peel };
     await User.updateOne({ username: user }, { tiles: { $push: peel } });
+
+    peelers += 1;
+    if (peelers >= game.players.length) {
+      await Game.updateOne({}, { peel: false });
+      peelers = 0;
+    }
+
     res.status(200).send(JSON.stringify(tile, null, 4));
+  }
+  else {
+    res.status(200).send(JSON.stringify(""));
   }
 });
 
