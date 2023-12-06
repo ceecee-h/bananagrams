@@ -23,19 +23,19 @@ The logic for the layout specifications are located in 'login.css'.
     <head>
         <meta charset="utf-8">
         <title>Bananagrams: Home Page</title>
-        <link rel="stylesheet" type="text/css" href="home.css">
-        <script src="home.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/home.css">
+        <script src="js/home.js"></script>
     </head>
 
     <body>
         <div id="content">
-            <div id="game_panel">
-                <div id="welcome_user"></div>
+            <div id="gamePanel">
+                <div id="welcomeUser"></div>
                 <div id="lobby"></div>
             </div>
-            <div id="stat_panel">
-                <div class="container">
-                    <table id="user_stats">
+            <div id="statPanel">
+                <div class="tableHolder">
+                    <table id="userStats">
                         <tr>
                             <th colspan="2">Game Statistics</th>
                         </tr>
@@ -57,7 +57,7 @@ The logic for the layout specifications are located in 'login.css'.
                         </tr>
                     </table>
                 </div>
-                <div class="container">
+                <div class="tableHolder">
                     <table id="friends">
                         <tr>
                             <th colspan="2">Friends List</th>
@@ -74,34 +74,34 @@ The logic for the layout specifications are located in 'login.css'.
                 </div>
             </div>
         </div>
-        <div id="how_to_section">
-            <div id="text_part">
-                <div id="how_to_title">
+        <div id="howToSection">
+            <div id="textPart">
+                <div id="howToTitle">
                     How to Play
                 </div>
-                <div class="how_to_text">
+                <div class="howToText">
                     The objective of Bananagrams is to be the first player to use all of
                     their letters.
                 </div>
-                <div class="how_to_text">
+                <div class="howToText">
                     Each player will start with 21 tiles. When the game begins, each
                     player races to arrange their tiles in their own intersecting word
                     grid... Words must read left to right horizontally, or top to bottom
                     vertically. Players may rearrange their grid at any time, and as often
                     as they like.
                 </div>
-                <div class="how_to_text">
+                <div class="howToText">
                     If a player arranges all of their tiles in an interconnected grid,
                     they can “peel,” and each player will receive a new tile they must add
                     to their grid.
                 </div>
-                <div class="how_to_text">
+                <div class="howToText">
                     If a player has a tile that they don’t want to use, they can “dump,”
                     and return that tile to the pool and get 3 new ones. Players cannot
                     dump if there
                     are less than 3 tiles in the pool.
                 </div>
-                <div class="how_to_text">
+                <div class="howToText">
                     When there are less tiles than players remaining in the pool, a player
                     can call “BANANAS!”. If their tiles are in a fully interconnected grid
                     and all of the words they have formed (horizontally and vertically,
@@ -111,13 +111,13 @@ The logic for the layout specifications are located in 'login.css'.
                     will be credited with a win.
                 </div>
             </div>
-            <div id="image_part">
-                <img src="assets/bananagrams.gif" alt="bananas" id="banana_picture">
+            <div id="imagePart">
+                <img src="assets/bananagrams.gif" alt="bananas" id="bananaPicture">
             </div>
         </div>
 
         <!-- Logout Button -->
-        <div id="logout_button">
+        <div id="logoutButton">
             <button onclick="logoutUser()">Logout</button>
         </div>
     </body>

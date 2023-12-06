@@ -23,20 +23,21 @@ The logic for the layout specifications are located in 'login.css'.
     <head>
         <meta charset="utf-8">
         <title>Bananagrams: Home Page</title>
-        <link rel="stylesheet" type="text/css" href="game.css">
-        <script src="game.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/game.css">
+        <script src="js/game.js"></script>
     </head>
 
     <body>
-        <div id="game_grid">
+        <div id="gameGrid">
             <table id="playspace"></table>
         </div>
-        <div id="bottom_panel">
-            <div id="tile_pool">
+        <div id="bottomPanel">
+            <div id="tilePool">
             </div>
-            <div id="action_buttons">
-                <button class="action_button" id="peel_banana" onclick="peelBanana()">PEEL</button>
-                <button class="action_button" id="dump" onclick="dumpTile()">DUMP</button>
+            <div id="actionButtons">
+                <button class="actionButton" id="peel_banana"
+                    onclick="peelBanana()">PEEL</button>
+                <button class="actionButton" id="dump" onclick="dumpTile()">DUMP</button>
             </div>
         </div>
     </body>

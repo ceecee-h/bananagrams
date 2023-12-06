@@ -108,7 +108,7 @@ purposes only on the home page.
 Takes a letter and returns the html needed to embed a tile.
 */
 function styledBananaTile(letter) {
-  return `<div class="wrap"><div class="banana_tile"><b>${letter}</b></div></div>`;
+  return `<div class="wrap"><div class="bananaTile"><b>${letter}</b></div></div>`;
 }
 
 /* 'generatePlayer()':

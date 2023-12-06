@@ -2,17 +2,13 @@
 Name: Davin Bush, CeeCee Hill, Jonathan Houge
 Course: CSC 337 - Web Programming
 Assignment: Final Project - Bananagrams
-File: home.css
+File: game.css
 Date: 11/13/23
 
--- STILL OOSTA, EDIT WHEN PAGE IS DONE --
-This file is the 'login.css' for the 'Bananagrams' web application.
-It gives 'index_html' the required styling to give the client a
-pleasant interface to interact with for dealing with account creation
-and login, including font-size, element locations, etc.
-
-There are some absolute pixel sizes ('px' instead of 'vw' or 'vh')
-to ensure spacing between labels and inputs.
+This file is the 'game.css' for the 'Bananagrams' web application.
+It gives 'game_html' the required styling to give the client a
+pleasant interface to interact with while playing the game
+including font-size, element locations, bananagrams theme styling, etc.
 */
 
 body {
@@ -21,7 +17,8 @@ body {
   font-family: monospace;
 }
 
-#game_grid {
+/* Game Board Section */
+#gameGrid {
   position: fixed;
   margin: auto;
   height: 80%;
@@ -51,14 +48,15 @@ tr {
   border: 2px solid grey;
 }
 
-#bottom_panel {
+/* Bottom Panel Section */
+#bottomPanel {
   position: fixed;
   height: 20%;
   left: 0;
   bottom: 0;
 }
 
-#tile_pool {
+#tilePool {
   position: fixed;
   display: flex;
   flex-direction: row;
@@ -70,7 +68,7 @@ tr {
   width: 80%;
 }
 
-#action_buttons {
+#actionButtons {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -83,7 +81,7 @@ tr {
   border-left: 4px solid black;
 }
 
-.action_button {
+.actionButton {
   flex: 1;
   margin: 5%;
   height: 50%;
@@ -97,26 +95,12 @@ tr {
   color: rgb(59, 31, 24);
 }
 
-/* other */
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.row {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  align-items: center;
-}
-
 .wrap {
   flex: 1;
   flex-grow: 0;
 }
 
-.banana_tile {
+.bananaTile {
   margin: 10%;
   text-align: center;
   font-size: large;
@@ -128,7 +112,7 @@ tr {
   width: 20px;
 }
 
-.banana_gridtile {
+.bananaGridtile {
   text-align: center;
   font-size: large;
   background-color: rgb(234, 215, 174);
@@ -139,6 +123,7 @@ tr {
   width: 20px;
 }
 
+/* Return Home CSS */
 p {
   text-align: center;
   font-size: 40px;

@@ -5,14 +5,11 @@ Assignment: Final Project - Bananagrams
 File: home.css
 Date: 11/13/23
 
--- STILL OOSTA, EDIT WHEN PAGE IS DONE --
-This file is the 'login.css' for the 'Bananagrams' web application.
-It gives 'index_html' the required styling to give the client a
-pleasant interface to interact with for dealing with account creation
-and login, including font-size, element locations, etc.
-
-There are some absolute pixel sizes ('px' instead of 'vw' or 'vh')
-to ensure spacing between labels and inputs.
+This file is the 'home.css' for the 'Bananagrams' web application.
+It gives 'home_html' the required styling to give the client a
+pleasant interface to interact with on the game's home page to view
+stats and start games, including font-size, element locations, 
+bananagram theme styling, etc.
 */
 
 body {
@@ -28,13 +25,36 @@ body {
   margin: auto;
 }
 
-/* Right side content */
-#game_panel {
+/* Left side exclusive content */
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.wrap {
+  flex: 1;
+  flex-grow: 0;
+}
+
+.bananaTile {
+  margin: 2px;
+  text-align: center;
+  font-size: 40px;
+  background-color: rgb(234, 215, 174);
+  border: 3px solid rgb(41, 28, 28);
+  border-radius: 5px;
+  color: rgb(59, 31, 24);
+  height: 50px;
+  width: 50px;
+}
+
+#gamePanel {
   flex: 1;
 }
 
-#welcome_user {
-  /* position: fixed; */
+#welcomeUser {
   display: flex;
   flex-direction: column;
 }
@@ -72,18 +92,18 @@ body {
   color: rgb(59, 31, 24);
 }
 
-/* left side content */
-#stat_panel {
+/* Right side exclusive content */
+#statPanel {
   flex: 1;
 }
 
-.container {
+.tableHolder {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-#user_stats,
+#userStats,
 #friends {
   flex: 1;
   height: 50%;
@@ -107,68 +127,7 @@ table {
   width: 100%;
 }
 
-.row {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  align-items: center;
-}
-
-.wrap {
-  flex: 1;
-  flex-grow: 0;
-}
-
-.banana_tile {
-  margin: 2px;
-  text-align: center;
-  font-size: 40px;
-  background-color: rgb(234, 215, 174);
-  border: 3px solid rgb(41, 28, 28);
-  border-radius: 5px;
-  color: rgb(59, 31, 24);
-  height: 50px;
-  width: 50px;
-}
-
-#how_to_section {
-  border: solid 3px black;
-  border-radius: 30px;
-  display: flex;
-  margin-left: 30px;
-  margin-right: 30px;
-  margin-top: 30px;
-  bottom: 30px;
-}
-
-#how_to_title {
-  font-weight: bold;
-  font-size: 30px;
-  padding-top: 15px;
-  text-align: center;
-}
-
-.how_to_text {
-  font-size: 15px;
-  padding-top: 30px;
-  padding-right: 10px;
-  padding-left: 25px;
-}
-
-#text_part {
-  flex: 3;
-}
-
-#image_part {
-  flex: 1;
-}
-
-#banana_picture {
-  width: 500px;
-  height: auto;
-}
-
-#logout_button {
+#logoutButton {
   position: fixed;
   top: 10px;
   right: 20px;
@@ -185,4 +144,43 @@ button {
   border: 3px solid rgb(41, 28, 28);
   border-radius: 5px;
   color: rgb(59, 31, 24);
+}
+
+/* Bottom exclusive content */
+
+#howToSection {
+  border: solid 3px black;
+  border-radius: 30px;
+  display: flex;
+  margin-left: 30px;
+  margin-right: 30px;
+  margin-top: 30px;
+  bottom: 30px;
+}
+
+#howToTitle {
+  font-weight: bold;
+  font-size: 30px;
+  padding-top: 15px;
+  text-align: center;
+}
+
+.howToText {
+  font-size: 15px;
+  padding-top: 30px;
+  padding-right: 10px;
+  padding-left: 25px;
+}
+
+#textPart {
+  flex: 3;
+}
+
+#imagePart {
+  flex: 1;
+}
+
+#bananaPicture {
+  width: 500px;
+  height: auto;
 }

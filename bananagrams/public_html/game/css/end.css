@@ -2,17 +2,13 @@
 Name: Davin Bush, CeeCee Hill, Jonathan Houge
 Course: CSC 337 - Web Programming
 Assignment: Final Project - Bananagrams
-File: home.css
+File: end.css
 Date: 11/13/23
 
--- STILL OOSTA, EDIT WHEN PAGE IS DONE --
-This file is the 'login.css' for the 'Bananagrams' web application.
-It gives 'index_html' the required styling to give the client a
-pleasant interface to interact with for dealing with account creation
-and login, including font-size, element locations, etc.
-
-There are some absolute pixel sizes ('px' instead of 'vw' or 'vh')
-to ensure spacing between labels and inputs.
+This file is the 'end.css' for the 'Bananagrams' web application.
+It gives 'end_html' the required styling to give the client a
+pleasant interface to interact with for dealing with the game's end screen,
+including font-size, element locations, bananagrams theme styling, etc.
 */
 
 body {
@@ -28,9 +24,23 @@ body {
   margin: auto;
 }
 
-/* Right side content */
-#game_panel {
+button {
+  text-align: center;
+  font-family: monospace;
+  background-color: rgb(234, 215, 174);
+  border: 3px solid rgb(41, 28, 28);
+  border-radius: 5px;
+  color: rgb(59, 31, 24);
+}
+
+/* Left side exclusive content */
+#gamePanel {
   flex: 1;
+}
+
+p {
+  text-align: center;
+  font-size: 40px;
 }
 
 #return {
@@ -41,54 +51,22 @@ body {
 
 .returnHome {
   margin: 10%;
-  text-align: center;
-  font-family: monospace;
   font-size: 40px;
-  background-color: rgb(234, 215, 174);
-  border: 3px solid rgb(41, 28, 28);
-  border-radius: 5px;
-  color: rgb(59, 31, 24);
+}
+
+/* Right side exclusive content */
+#statPanel {
+  flex: 1;
 }
 
 .friendRequest {
-  text-align: center;
   font-size: 20px;
-  font-family: monospace;
-  background-color: rgb(234, 215, 174);
-  border: 3px solid rgb(41, 28, 28);
-  border-radius: 5px;
-  color: rgb(59, 31, 24);
 }
 
-#active {
-  margin: 10%;
-  text-align: center;
-  font-family: monospace;
-  font-size: 40px;
-  color: rgb(59, 31, 24);
-}
-
-
-/* left side content */
-#stat_panel {
-  flex: 1;
-}
-
-.container {
+.tableHolder {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-#user_stats,
-#friends {
-  flex: 1;
-  height: 50%;
-}
-
-p {
-  text-align: center;
-  font-size: 40px;
 }
 
 tr,
@@ -109,7 +87,6 @@ table {
   width: 100%;
 }
 
-
 .row {
   display: flex;
   flex-direction: row;
@@ -122,7 +99,7 @@ table {
   flex-grow: 0;
 }
 
-.banana_tile {
+.bananaTile {
   margin: 2px;
   text-align: center;
   font-size: 40px;
