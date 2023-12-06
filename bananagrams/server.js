@@ -274,6 +274,22 @@ app.get("/game/getuser", function (req, res) {
   }
 });
 
+// get friends content
+app.get("/game/friends/:user", function (req, res) {
+  res.setHeader("Content-Type", "text/plain");
+  let username = req.params.user;
+  let p = User.findOne({ username: username }).exec();
+  p.then((user) => {
+    let friends = User.find({username: {$in: user.friends}}).exec();
+      friends.then((friendlist) => {
+        res.status(200).send(JSON.stringify(friendlist, null, 4));
+      })
+  }).catch((err) => {
+    console.log(err);
+    res.send("Error fetching users");
+  });
+});
+
 // get the current game
 app.get("/game/getgame", function (req, res) {
   res.setHeader("Content-Type", "text/plain");
@@ -295,7 +311,6 @@ app.get("/game/pinglobby", function (req, res) {
   let game = Game.findOne({})
     .exec()
     .then((game) => {
-      console.log(game);
       if (game == undefined) res.status(204).send("No game in progress");
       else {
         res.status(200).send(JSON.stringify(game, null, 4));

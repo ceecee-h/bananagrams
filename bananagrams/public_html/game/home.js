@@ -31,15 +31,36 @@ function getUser() {
       currentUser = JSON.parse(user);
       setTitle(currentUser.username);
       generateStats(currentUser.wins, currentUser.played);
+      getFriendList();
+    });
+}
+
+/* 'getFriendList()':
+Called automatically by the server on load.
+
+Sends a 'GET' request to the server to get the currently logged in user.
+Sets the global user variable and sets the 'welcome' message to be
+personalized for that user.
+*/
+function getFriendList() {
+  let friendlist = fetch(`friends/${currentUser.username}`)
+    .then((response) => {
+      return response.text();
+    })
+    .then((friendlist) => {
+      let friends = JSON.parse(friendlist);
+      for (let i = 0; i < currentUser.friends.length; i++) {
+        generateFriend(friends[i].username, friends[i].wins);
+      }
     });
 }
 
 // TODO: REMOVE ONCE INFO GRABBED FROM SERVER
 window.onload = () => {
-  let friendsList = { jonathan: 77, davin: 52, ceecee: 81 };
-  for (const key in friendsList) {
-    generateFriend(key, friendsList[key]);
-  }
+  // let friendsList = { jonathan: 77, davin: 52, ceecee: 81 };
+  // for (const key in friendsList) {
+  //   generateFriend(key, friendsList[key]);
+  // }
   generateLobby();
 };
 setInterval(generateLobby, 1000);
