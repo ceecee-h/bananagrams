@@ -2,11 +2,11 @@
 Name: Davin Bush, CeeCee Hill, Jonathan Houge
 Course: CSC 337 - Web Programming
 Assignment: Final Project - Bananagrams
-File: index.js
+File: login.js
 Date: 11/13/23
 
 -- STILL OOSTA, EDIT WHEN PAGE IS DONE --
-This is 'index.js', the client javascript file for account handling within 'Bananagrams'.
+This is 'login.js', the client javascript file for account handling within 'Bananagrams'.
 The HTML page 'index.html' utilizes this file.
 It allows the client to create/submit their own users & items.
 It fulfills the 'POST' HTTP requests with 'createUser()' and 'createItem()'.
@@ -84,10 +84,11 @@ function ping() {
 // peels
 function peelBanana() {
   console.log("peel");
-  if (true) {
-    //(verifyPeel()) {
+  console.log(currentTiles);
+  if (verifyPeel()) {
+    
     let package = { user: currentUser.username };
-    let peel = fetch("peel", {
+    let peel = fetch("/game/peel", {
       method: "POST",
       body: JSON.stringify(package),
       headers: { "Content-Type": "application/json" },
@@ -123,12 +124,19 @@ function verifyPeel() {
       }
     }
   }
-  if (currentTiles.length != 0) {
+  console.log(userBoard);
+  console.log(numTiles);
+  if (currentTiles.length != numTiles) {
     window.alert("Place all tiles on the board!");
     return false;
   }
 
-  return checkConnectivity(userBoard, start[0], start[1], numTiles);
+  let connected = checkConnectivity(userBoard, start[0], start[1], numTiles);
+  if (!connected) {
+    window.alert("Connect your grid!");
+    return false;
+  }
+  return true;
 }
 
 // checks if the tiles in the board are fully connected
@@ -136,7 +144,6 @@ function checkConnectivity(arr, rowStart, colStart, goal) {
   let seen = [];
 
   function helper(row, col) {
-    calls += 1;
     if (
       row < 0 ||
       row > 20 ||
