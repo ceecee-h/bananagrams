@@ -55,6 +55,7 @@ var UserSchema = new Schema({
   password: String, // hash(password + salt)
   salt: String,
   inGame: Boolean,
+  tiles: Array,
   wins: Number,
   played: Number,
   friends: Array, // list of object ids
@@ -358,7 +359,16 @@ app.post("/game/startgame", async function (req, res) {
   if (game === null) {
     res.status(405).send("How did you do this");
   } else {
+    // game in progress
     await Game.updateOne({}, { inProgress: true });
+    let players = game.players;
+    for (let player of players) {
+      let playerTiles = [];
+      for (let i = 0; i < 21; i++) {
+        playerTiles.push(getTile());
+      }
+      await User.updateOne({ username: player }, { inGame: true }, {tiles: playerTiles}).exec();
+    }
     res.end("Game started");
   }
 });
@@ -371,7 +381,7 @@ app.get("/game/destroygame", async function (req, res) {
   } else {
     let players = game.players;
     for (let player of players) {
-      await User.updateOne({ username: player }, { inGame: false }).exec();
+      await User.updateOne({ username: player }, { inGame: false }, {tiles: []}).exec();
     }
     await Game.deleteOne({}).exec();
     res.end("Game deleted");
@@ -440,19 +450,22 @@ app.post("/game/peel", async function (req, res) {
 );
 
 // called on every tick to update the game state
-app.post("/game/ping", async function (req, res) {
+app.post("/game/ping/:user", async function (req, res) {
   res.setHeader("Content-Type", "text/plain");
+  let user = req.params.user;
   let game = await Game.findOne({}).exec();
   if (game.peel) {
     let peel = await getTile();
     let tile = { tile: peel };
+    await User.updateOne({username: user}, {tiles: {$push: peel}});
     res.status(200).send(JSON.stringify(tile, null, 4));
   }
 });
 
 // takes a tile to be dumped, returns a json object containing a list of three new letters
-app.post("/game/dump", async function (req, res) {
+app.post("/game/dump/:user", async function (req, res) {
   res.setHeader("Content-Type", "text/plain");
+  let user = req.params.user;
   let dump = req.body.tile;
   let game = await Game.findOne({}).exec();
   if (game.tiles.length < 3) {
@@ -465,6 +478,7 @@ app.post("/game/dump", async function (req, res) {
     let tile3 = await getTile();
     let newTiles = { tiles: [tile1, tile2, tile3] };
     await Game.updateOne({}, { $push: { tiles: dump } });
+    await User.updateOne({username: user}, {tiles: {$push: [tile1, tile2, tile3]}});
     res.status(200).send(JSON.stringify(newTiles, null, 4));
   }
 });

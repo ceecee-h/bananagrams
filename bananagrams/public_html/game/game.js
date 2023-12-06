@@ -12,18 +12,47 @@ It allows the client to create/submit their own users & items.
 It fulfills the 'POST' HTTP requests with 'createUser()' and 'createItem()'.
 */
 
+var currentUser;
 var currentTiles = [];
 var selectedTileId = '';
 var count = 0;
 var words = [];
 
+setTimeout(getUser, 0);
 // TODO: REMOVE ONCE INFO GRABBED FROM SERVER
 window.onload = () => {
     generateGrid();
-    addToPool(['A', 'A', 'B', 'C', 'E', 'E', 'E', 
-                'F', 'H', 'I', 'L', 'K', 'M', 'M',
-                'P', 'Q', 'R', 'S', 'S', 'T', 'U'])
 };
+
+/* 'getUser()':
+Called automatically by the server on load.
+
+Sends a 'GET' request to the server to get the currently logged in user.
+Sets the global user variable and sets the 'welcome' message to be
+personalized for that user.
+*/
+function getUser() {
+    user = fetch("getuser")
+      .then((response) => {
+        return response.text();
+      })
+      .then((user) => {
+        currentUser = JSON.parse(user);
+        addToPool(currentUser.tiles);
+      });
+}
+
+// ping server every second for game status
+function ping() {
+    pingg = fetch(`ping/${currentUser.username}`)
+        .then((response) => {
+            return response.text();
+        })
+        .then((pingg) => {
+            newTiles = JSON.parse(pingg);
+            addToPool([newTiles['tile']]);
+        })
+}
 
 // verify if you are allowed to peel, returns boolean true if peel is allowed and false if peel is not allowed
 function verifyPeel() {
@@ -167,12 +196,24 @@ function dumpTile() {
         window.alert('Please select a tile to dump first!')
     }
     else {
-        // TODO: add server call
-        let newTiles = ['E', 'X', 'Z'];
         let oldTile = document.getElementById(selectedTileId);
+        let newTiles = fetch(`dump/${currentUser.username}`, {
+            method: 'POST',
+            body: JSON.stringify({tile: oldTile.innerText}),
+            headers: { "Content-Type": "application/json" },
+        })
+        .then((response) => {
+            newTiles = response.text();
+        })
+        .then((newTiles) => {
+            let tiles = JSON.parse(newTiles);
+            addToPool(tiles[tiles]);
+        })
+        .catch((err) => window.alert(err));
+        //let newTiles = ['E', 'X', 'Z'];
         oldTile.parentElement.innerHTML = "";
         selectedTileId = '';
-        addToPool(newTiles);
+        //addToPool(newTiles);
     }
 }
 
