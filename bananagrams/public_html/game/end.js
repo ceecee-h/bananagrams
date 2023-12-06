@@ -44,6 +44,10 @@ personalized for that user.
 function getGame() {
   if (currentUser == undefined) {
     setTimeout(getGame, 0);
+  } else if (!currentUser.inGame) {
+    let content = document.getElementsByTagName("body")[0];
+    content.innerHTML =
+      "<div class='return'><p>Hey! You're not supposed to be here!<p><button class='returnHome' onclick='returnHome()'>Return to Lobby</button></div>";
   } else {
     game = fetch("getgame")
       .then((response) => {
@@ -64,9 +68,12 @@ Activates on button click, moving the player back to the
 home page.
 */
 function returnHome() {
-  game = fetch("destroygame").then(() => {
-    window.location.replace(`${window.location.origin}/game/home.html`);
-  });
+  if (!currentUser.inGame) window.location.replace(`${window.location.origin}/game/home.html`);
+  else {
+    game = fetch("destroygame").then(() => {
+      window.location.replace(`${window.location.origin}/game/home.html`);
+    });
+  }
 }
 
 /* 'setTitle()':
