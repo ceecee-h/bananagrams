@@ -99,6 +99,11 @@ body {
   height: 50%;
 }
 
+p {
+  text-align: center;
+  font-size: 40px;
+}
+
 tr,
 td {
   padding: 10;
