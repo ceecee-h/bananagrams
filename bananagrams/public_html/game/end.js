@@ -42,17 +42,21 @@ Sets the global user variable and sets the 'welcome' message to be
 personalized for that user.
 */
 function getGame() {
-  game = fetch("getgame")
-    .then((response) => {
-      return response.text();
-    })
-    .then((game) => {
-      currentGame = JSON.parse(game);
-      setTitle();
-      for (let user of currentGame.players) {
-        if (user != currentUser.username) generatePlayer(user);
-      }
-    });
+  if (currentUser == undefined) {
+    setTimeout(getGame, 0);
+  } else {
+    game = fetch("getgame")
+      .then((response) => {
+        return response.text();
+      })
+      .then((game) => {
+        currentGame = JSON.parse(game);
+        setTitle();
+        for (let user of currentGame.players) {
+          if (user != currentUser.username) generatePlayer(user);
+        }
+      });
+  }
 }
 
 /* 'returnHome()':
@@ -60,8 +64,9 @@ Activates on button click, moving the player back to the
 home page.
 */
 function returnHome() {
-  // TODO: add destruction of game object
-  window.location.replace(`${window.location.origin}/game/home.html`);
+  game = fetch("destroygame").then(() => {
+    window.location.replace(`${window.location.origin}/game/home.html`);
+  });
 }
 
 /* 'setTitle()':

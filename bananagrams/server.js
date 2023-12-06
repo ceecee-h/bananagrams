@@ -363,6 +363,21 @@ app.post("/game/startgame", async function (req, res) {
   }
 });
 
+app.get("/game/destroygame", async function (req, res) {
+  res.setHeader("Content-Type", "text/plain");
+  let game = await Game.findOne({}).exec();
+  if (game === null) {
+    res.end("Game already deleted");
+  } else {
+    let players = game.players;
+    for (let player of players) {
+      await User.updateOne({ username: player }, { inGame: false }).exec();
+    }
+    await Game.deleteOne({}).exec();
+    res.end("Game deleted");
+  }
+});
+
 // returns a random tile from the pool of available tiles and removes it from the pool
 async function getTile() {
   let game = await Game.findOne({}).exec();
