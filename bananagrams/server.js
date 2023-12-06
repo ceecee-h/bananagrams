@@ -295,7 +295,6 @@ app.get("/game/pinglobby", function (req, res) {
   let game = Game.findOne({})
     .exec()
     .then((game) => {
-      console.log(game);
       if (game == undefined) res.status(204).send("No game in progress");
       else {
         res.status(200).send(JSON.stringify(game, null, 4));
@@ -345,6 +344,21 @@ app.post("/game/startgame", async function (req, res) {
   } else {
     await Game.updateOne({}, { inProgress: true });
     res.end("Game started");
+  }
+});
+
+app.get("/game/destroygame", async function (req, res) {
+  res.setHeader("Content-Type", "text/plain");
+  let game = await Game.findOne({}).exec();
+  if (game === null) {
+    res.end("Game already deleted");
+  } else {
+    let players = game.players;
+    for (let player of players) {
+      await User.updateOne({ username: player }, { inGame: false }).exec();
+    }
+    await Game.deleteOne({}).exec();
+    res.end("Game deleted");
   }
 });
 
