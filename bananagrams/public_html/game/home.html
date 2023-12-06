@@ -34,36 +34,44 @@ The logic for the layout specifications are located in 'login.css'.
                 <div id="lobby"></div>
             </div>
             <div id="stat_panel">
-                <div class="container"><table id="user_stats">
-                    <tr><th colspan="2">Game Statistics</th></tr>
-                    <tr>
-                        <td>Wins:</td>
-                        <td id="win_count">5</td>
-                    </tr>
-                    <tr>
-                        <td>Losses:</td>
-                        <td id="lose_count">10</td>
-                    </tr>
-                    <tr>
-                        <td>Games Played:</td>
-                        <td id="total_games">15</td>
-                    </tr>
-                    <tr>
-                        <td>Win Rate:</td>
-                        <td id="win_rate">15</td>
-                    </tr>
-                </table></div>
-                <div class="container"><table id="friends">
-                    <tr><th colspan="2">Friends List</th></tr>
-                    <tr>
-                        <th>
-                            Username
-                        </th>
-                        <th>
-                            Win Rate
-                        </th>
-                    </tr>
-                </table></div>
+                <div class="container">
+                    <table id="user_stats">
+                        <tr>
+                            <th colspan="2">Game Statistics</th>
+                        </tr>
+                        <tr>
+                            <td>Wins:</td>
+                            <td id="win_count"></td>
+                        </tr>
+                        <tr>
+                            <td>Losses:</td>
+                            <td id="lose_count"></td>
+                        </tr>
+                        <tr>
+                            <td>Games Played:</td>
+                            <td id="total_games"></td>
+                        </tr>
+                        <tr>
+                            <td>Win Rate:</td>
+                            <td id="win_rate"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="container">
+                    <table id="friends">
+                        <tr>
+                            <th colspan="2">Friends List</th>
+                        </tr>
+                        <tr>
+                            <th>
+                                Username
+                            </th>
+                            <th>
+                                Win Rate
+                            </th>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div>
         <div id="how_to_section">
@@ -76,32 +84,41 @@ The logic for the layout specifications are located in 'login.css'.
                     their letters.
                 </div>
                 <div class="how_to_text">
-                    Each player will start with 21 tiles. When the game begins, each player races
-                    to arrange their tiles in their own intersecting word grid... Words must read
-                    left to right horizontally, or top to bottom vertically. Players may rearrange
-                    their grid at any time, and as often as they like.
+                    Each player will start with 21 tiles. When the game begins, each
+                    player races to arrange their tiles in their own intersecting word
+                    grid... Words must read left to right horizontally, or top to bottom
+                    vertically. Players may rearrange their grid at any time, and as often
+                    as they like.
                 </div>
                 <div class="how_to_text">
-                    If a player arranges all of their tiles in an interconnected grid, they can
-                    “peel,” and each player will receive a new tile they must add to their grid.
+                    If a player arranges all of their tiles in an interconnected grid,
+                    they can “peel,” and each player will receive a new tile they must add
+                    to their grid.
                 </div>
                 <div class="how_to_text">
-                    If a player has a tile that they don’t want to use, they can “dump,” and return
-                    that tile to the pool and get 3 new ones. Players cannot dump if there are less
-                    than 3 tiles in the pool.
+                    If a player has a tile that they don’t want to use, they can “dump,”
+                    and return that tile to the pool and get 3 new ones. Players cannot
+                    dump if there
+                    are less than 3 tiles in the pool.
                 </div>
                 <div class="how_to_text">
-                    When there are less tiles than players remaining in the pool, a player can call
-                    “BANANAS!”. If their tiles are in a fully interconnected grid and all of the
-                    words they have formed (horizontally and vertically, NOT diagonally) are valid,
-                    they win the game. But: be careful, if a player calls BANANAS and their board
-                    is not connected or contains invalid words, that player will lose the game, and
-                    all other players will be credited with a win.
+                    When there are less tiles than players remaining in the pool, a player
+                    can call “BANANAS!”. If their tiles are in a fully interconnected grid
+                    and all of the words they have formed (horizontally and vertically,
+                    NOT diagonally) are valid, they win the game. But: be careful, if a
+                    player calls BANANAS and their board is not connected or contains
+                    invalid words, that player will lose the game, and all other players
+                    will be credited with a win.
                 </div>
             </div>
             <div id="image_part">
                 <img src="assets/bananagrams.gif" alt="bananas" id="banana_picture">
             </div>
+        </div>
+
+        <!-- Logout Button -->
+        <div id="logout_button">
+            <button onclick="logoutUser()">Logout</button>
         </div>
     </body>
 

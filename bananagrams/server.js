@@ -254,6 +254,33 @@ app.post("/login", function (req, res) {
   });
 });
 
+// user logging in - give the user a cookie upon login (post due to sensitive information)
+app.post("/logout", function (req, res) {
+  res.setHeader("Content-Type", "text/plain");
+
+  let username = req.body.user;
+  let c = req.cookies;
+  console.log("logout:");
+  console.log(req.cookies);
+
+  let p = User.findOne({ username: username }).exec();
+  p.then((user) => {
+    if (!user) {
+      res.status(404).send("User not found!");
+      return;
+    }
+
+    if (c != undefined && c.login != undefined) {
+      if (sessions[c.login.username].id == c.login.sessionID) {
+        delete sessions[c.login.username];
+      }
+    }
+  }).catch((err) => {
+    console.log(err);
+    res.send("Error fetching users");
+  });
+});
+
 // -- game requests
 
 // get the current user
@@ -281,10 +308,10 @@ app.get("/game/friends/:user", function (req, res) {
   let username = req.params.user;
   let p = User.findOne({ username: username }).exec();
   p.then((user) => {
-    let friends = User.find({username: {$in: user.friends}}).exec();
-      friends.then((friendlist) => {
-        res.status(200).send(JSON.stringify(friendlist, null, 4));
-      })
+    let friends = User.find({ username: { $in: user.friends } }).exec();
+    friends.then((friendlist) => {
+      res.status(200).send(JSON.stringify(friendlist, null, 4));
+    });
   }).catch((err) => {
     console.log(err);
     res.send("Error fetching users");
@@ -430,24 +457,23 @@ app.post("/game/peel", async function (req, res) {
       let user = req.body.user;
       let valid = checkValid(words);
       await Game.updateOne({}, { win: valid });
-      await Game.updateOne({}, { user: user});
+      await Game.updateOne({}, { user: user });
       let players = game.players;
       for (i in players) {
         let player = players[i];
-        await User.updateOne({ username: player }, {$inc: { played: 1 }});
+        await User.updateOne({ username: player }, { $inc: { played: 1 } });
         if ((player == user && valid) || (player != user && !valid)) {
-          await User.updateOne({ username: player }, {$inc: { wins: 1 }});
+          await User.updateOne({ username: player }, { $inc: { wins: 1 } });
         }
       }
     }
-    } else {
-      await Game.updateOne({}, { peel: true });
-      setInterval(() => {
-        Game.updateOne({}, { peel: false });
-      }, 1000);
-    }
+  } else {
+    await Game.updateOne({}, { peel: true });
+    setInterval(() => {
+      Game.updateOne({}, { peel: false });
+    }, 1000);
   }
-);
+});
 
 // called on every tick to update the game state
 app.post("/game/ping/:user", async function (req, res) {

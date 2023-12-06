@@ -76,20 +76,20 @@ in the lobby, or creates one otherwise.
 function joinGame() {
   let p = fetch("joingame", {
     method: "POST",
-    body: JSON.stringify({user: currentUser.username}),
+    body: JSON.stringify({ user: currentUser.username }),
     headers: { "Content-Type": "application/json" },
   });
 
   p.then((response) => {
     return response.status;
   })
-  .then((status) => {
-    generateLobby();
-  })
-  .catch((error) => {
-    console.log("THERE WAS A PROBLEM");
-    console.log(error);
-  });
+    .then((status) => {
+      generateLobby();
+    })
+    .catch((error) => {
+      console.log("THERE WAS A PROBLEM");
+      console.log(error);
+    });
 }
 
 /* 'generateLobby()':
@@ -104,39 +104,35 @@ cases:
 function generateLobby() {
   let lobby = document.getElementById("lobby");
   game = fetch("pinglobby")
-  .then((response) => {
-    return response.text();
-  })
-  .then((game) => {
-    if (game == '') {
-      // no game in progress
-      lobby.innerHTML = '<button class="join" onclick="joinGame()">JOIN GAME</button>';
-    }
-    else {
-      currentGame = JSON.parse(game);
-      // game started!!
-      if (currentGame.inProgress && currentGame.players.includes(currentUser.username)) {
-        window.location.replace(`${window.location.origin}/game/game.html`);
-      }
-      // game present
-      if (currentGame.inProgress) {
-        // game in progress, cannot join
-        lobby.innerHTML = '<div id="active">GAME IN PROGRESS...</div>';
-      }
-      else if (currentGame.players[0] == currentUser.username) {
-        // user is host of lobby
-        lobby.innerHTML = `<div class="waiting"><p>waiting for players...</p><p>${currentGame.players.length}/4</p><button class="join" onclick="startGame()">START GAME</button></div>`;
-      }
-      else if (currentGame.players.includes(currentUser.username)) {
-        // user in lobby
-        lobby.innerHTML = `<div class="waiting"><p>waiting for players...</p><p>${currentGame.players.length}/4</p></div>`;
-      }
-      else {
-        // lobby is open to join
+    .then((response) => {
+      return response.text();
+    })
+    .then((game) => {
+      if (game == "") {
+        // no game in progress
         lobby.innerHTML = '<button class="join" onclick="joinGame()">JOIN GAME</button>';
+      } else {
+        currentGame = JSON.parse(game);
+        // game started!!
+        if (currentGame.inProgress && currentGame.players.includes(currentUser.username)) {
+          window.location.replace(`${window.location.origin}/game/game.html`);
+        }
+        // game present
+        if (currentGame.inProgress) {
+          // game in progress, cannot join
+          lobby.innerHTML = '<div id="active">GAME IN PROGRESS...</div>';
+        } else if (currentGame.players[0] == currentUser.username) {
+          // user is host of lobby
+          lobby.innerHTML = `<div class="waiting"><p>waiting for players...</p><p>${currentGame.players.length}/4</p><button class="join" onclick="startGame()">START GAME</button></div>`;
+        } else if (currentGame.players.includes(currentUser.username)) {
+          // user in lobby
+          lobby.innerHTML = `<div class="waiting"><p>waiting for players...</p><p>${currentGame.players.length}/4</p></div>`;
+        } else {
+          // lobby is open to join
+          lobby.innerHTML = '<button class="join" onclick="joinGame()">JOIN GAME</button>';
+        }
       }
-    }
-  });
+    });
 }
 
 /* 'startGame()':
@@ -153,13 +149,13 @@ function startGame() {
   p.then((response) => {
     return response.status;
   })
-  .then((status) => {
-    generateLobby();
-  })
-  .catch((error) => {
-    console.log("THERE WAS A PROBLEM");
-    console.log(error);
-  });
+    .then((status) => {
+      generateLobby();
+    })
+    .catch((error) => {
+      console.log("THERE WAS A PROBLEM");
+      console.log(error);
+    });
 }
 
 // UI GENERATION
@@ -218,8 +214,29 @@ function generateStats(wins, total) {
   total_games.innerText = total;
   let win_rate = document.getElementById("win_rate");
   if (wins == 0 && total == 0) {
-    win_rate.innerText = 'N/A';
+    win_rate.innerText = "N/A";
   } else {
     win_rate.innerText = `${(wins / total) * 100}%`;
   }
+}
+
+/* 'logoutUser()':
+Called by clicking the 'login' button on 'index.html'
+
+Used to send a 'GET' request to the server to get a user.
+Gathers inputs, checks them, and uses them to create the url.
+'GET' request is then sent to the server, the respose's status code is checked.
+Status code dictates whether or not the user will be redirected.
+*/
+function logoutUser() {
+  let package = { user: currentUser.username };
+
+  let p = fetch("/logout", {
+    method: "POST",
+    body: JSON.stringify(package),
+    headers: { "Content-Type": "application/json" },
+  });
+
+  p;
+  window.location.replace(`${window.location.origin}/index.html`);
 }
