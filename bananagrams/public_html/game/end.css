@@ -33,12 +33,6 @@ body {
   flex: 1;
 }
 
-#welcome_user {
-  /* position: fixed; */
-  display: flex;
-  flex-direction: column;
-}
-
 #return {
   display: flex;
   flex-direction: column;
@@ -74,13 +68,6 @@ body {
   color: rgb(59, 31, 24);
 }
 
-.waiting {
-  margin: 10%;
-  text-align: center;
-  font-family: monospace;
-  font-size: 40px;
-  color: rgb(59, 31, 24);
-}
 
 /* left side content */
 #stat_panel {
@@ -122,10 +109,6 @@ table {
   width: 100%;
 }
 
-/* other */
-#faq {
-  text-align: center;
-}
 
 .row {
   display: flex;
