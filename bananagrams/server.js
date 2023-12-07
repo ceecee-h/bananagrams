@@ -35,7 +35,6 @@ app.use(cookieParser());
 
 app.use("/game/", authenticate);
 app.get("/game/", (req, res, next) => {
-  //console.log("another");
   next();
 });
 app.use(express.static("public_html")); // static
@@ -430,26 +429,26 @@ async function getTile() {
   return letter;
 }
 
-let validWords = () => {
+function validWords() {
   const wordList = [];
 
-  const data = fs.readFileSync("/public_html/game/assets/dictionary.txt", {
+  const data = fs.readFileSync("public_html/game/assets/dictionary.txt", {
     encoding: "utf8",
     flag: "r",
   });
 
   let words = data.split("\n");
-  for (let i in words) {
-    let word = words[i];
-    wordList.push(word);
+  for (let word of words) {
+    wordList.push(word.trim());
   }
   return wordList;
 };
 
 function checkValid(words) {
-  for (i in words) {
-    let word = words[i];
-    if (!validWords.includes(word)) {
+  let dict = validWords();
+  for (let word of words) {
+    if (!dict.includes(word)) {
+      console.log("this is broken");
       return false;
     }
   }
@@ -458,13 +457,14 @@ function checkValid(words) {
 
 var peelers = 0;
 // puts a peel into the queue
-app.post("/game/peel", async function (req, res) {
+app.post("/game/peel/", async function (req, res) {
   let game = await Game.findOne({});
   console.log("peel call\n");
 
   if (game.tiles.length < game.players.length) {
     console.log("bananaz")
     let words = req.body.words;
+    console.log(words);
     let user = req.body.user;
     let valid = checkValid(words);
     await Game.updateOne({}, { win: valid });
@@ -488,13 +488,13 @@ app.post("/game/peel", async function (req, res) {
 // called on every tick to update the game state
 app.get("/game/ping/:user", async function (req, res) {
   res.setHeader("Content-Type", "text/plain");
-  console.log("ping\n");
   let user = req.params.user;
   let game = await Game.findOne({}).exec();
   console.log(peelers)
   if (game && game.peel && peelers <= game.players.length) {
+    console.log("peel\n");
     let peel = await getTile();
-    let tile = { "tile": peel };
+    let tile = { "tile": peel, "status": "incoming"};
     await User.updateOne({ username: user }, { $push: { tiles: peel } });
 
     peelers += 1;
@@ -505,8 +505,38 @@ app.get("/game/ping/:user", async function (req, res) {
 
     res.status(200).send(JSON.stringify(tile, null, 4));
   }
+  else if (game.user != '') {
+    console.log("game over\n");
+    // player has won
+    let winners = [];
+    let losers = [];
+    let players = game.players;
+    for (let p of players) {
+      if (game.win) {
+        if (game.user == p) {
+          winners.push(p);
+        }
+        else losers.push(p);
+      }
+      else {
+        if (game.user == p) {
+          losers.push(p);
+        } else winners.push(p);
+      }
+    }
+    let stat = {"status": 'game_over', "winners": winners, "losers": losers};
+    res.status(200).send(JSON.stringify(stat, null, 4));
+  }
+  else if (game.tiles.length < game.players.length) {
+    console.log("bananas\n");
+    // player can bananas
+    let stat = {"status": 'banana'};
+    res.status(200).send(JSON.stringify(stat, null, 4));
+  }
   else {
-    res.status(200).send(JSON.stringify(""));
+    console.log("nop\n");
+    let stat = {"status": 'peel'};
+    res.status(200).send(JSON.stringify(stat, null, 4));
   }
 });
 
@@ -562,4 +592,4 @@ app.get("/game/:user/friendrequest", async function (req, res) {
 });
 
 // confirmation in terminal - app is up & listening
-app.listen(port, () => console.log(`App listening at http://localhost:${port}`));
+app.listen(port, () => {console.log(`App listening at http://localhost:${port}`)});
