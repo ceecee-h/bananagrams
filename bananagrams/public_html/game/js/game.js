@@ -13,10 +13,21 @@ It fulfills 'POST' HTTP requests with 'peelBanana()' and 'dumpTile()'.
 */
 
 var currentUser;
+var currentGame;
+
 var currentTiles = [];
 var selectedTileId = "";
 var count = 0;
 var words = [];
+
+setTimeout(getUser, 0);
+setTimeout(getGame, 0);
+var currentTiles = [];
+var selectedTileId = "";
+var count = 0;
+var words = [];
+var bananas = false;
+let userBoard = new Array(21);
 
 setTimeout(getUser, 0);
 setTimeout(checkUser, 0);
@@ -44,15 +55,38 @@ function getUser() {
     });
 }
 
+/* 'getGame()':
+Called automatically by the server on load.
+
+Sends a 'GET' request to the server to get the current game.
+Sets the global game variable to be used by other functions later.
+Has checking to make sure the 'currentUser' variable has been set.
+
+
+*/
+function getGame() {
+  if (currentUser == undefined) {
+    setTimeout(getGame, 0); // 'getUser()' hasn't fetched yet - try again
+  } else {
+    game = fetch("getgame")
+      .then((response) => {
+        return response.text();
+      })
+      .then((game) => {
+        currentGame = JSON.parse(game);
+      });
+  }
+}
+
 /* 'checkUser()':
 Called automatically by the server on load.
 
 Kicks the user out if they're not in the game.
 */
 function checkUser() {
-  if (currentUser == undefined) {
-    setTimeout(checkUser, 0);
-  } else if (!currentUser.inGame) {
+  if (currentUser === undefined && currentGame === undefined) {
+    setTimeout(checkUser, 100);
+  } else if (!currentGame.players.includes(currentUser.username)) {
     let content = document.getElementsByTagName("body")[0];
     content.innerHTML =
       "<div class='return'><p>Hey! You're not supposed to be here!<p><button class='returnHome' onclick='returnHome()'>Return to Lobby</button></div>";
@@ -77,9 +111,26 @@ function ping() {
       return response.text();
     })
     .then((data) => {
-      let newTiles = JSON.parse(data);
-      if (newTiles != "") {
-        addToPool([newTiles["tile"]]);
+      let results = JSON.parse(data);
+      if (results["status"] == "incoming") {
+        addToPool([results["tile"]]);
+      } else if (results["status"] == "banana") {
+        let button = document.getElementById("peel_banana");
+        button.innerText = "BANANAS";
+        bananas = true;
+      } else if (results["status"] == "game_over") {
+        if (results["winners"].includes(currentUser.username)) {
+          if (results["winners"].length == 1) {
+            window.alert("You Won!");
+          } else {
+            let loser = results["losers"][0];
+            window.alert(`You Won!\n${loser.username} submitted invalid words!`);
+          }
+        } else {
+          window.alert("You Lost!");
+        }
+        // redirect to the end page
+        window.location.replace(`${window.location.origin}/game/end.html`);
       }
     });
 }
@@ -89,14 +140,26 @@ This function is called when a player tries to peel.
 Sends a 'POST' request to the server to submit a request to peel.
 */
 function peelBanana() {
-  if (verifyPeel()) { //make sure the player is allowed to peel
+  if (bananas) {
+    if (verifyPeel()) {
+      console.log("sending bananas");
+      let words = makeWordList();
+      let package = { user: currentUser.username, words: words };
+      let peel = fetch("peel", {
+        method: "POST",
+        body: JSON.stringify(package),
+        headers: { "Content-Type": "application/json" },
+      }).then((response) => {
+        return response.text();
+      });
+    }
+  } else if (verifyPeel()) {
     let package = { user: currentUser.username };
     let peel = fetch("peel", {
       method: "POST",
       body: JSON.stringify(package),
       headers: { "Content-Type": "application/json" },
-    })
-    .then((response) => {
+    }).then((response) => {
       return response.text();
     });
   }
@@ -192,29 +255,29 @@ function makeWordList(board) {
   let curr = "";
 
   // check horizontally
-  for (let i = 0; i < board.length; i++) {
+  for (let i = 0; i < userBoard.length; i++) {
     addWord();
     curr = "";
-    for (let j = 0; j < board[0].length; j++) {
-      if (board[i][j] === undefined) {
+    for (let j = 0; j < userBoard[0].length; j++) {
+      if (userBoard[i][j] === undefined) {
         addWord();
         curr = "";
       } else {
-        curr += board[i][j];
+        curr += userBoard[i][j];
       }
     }
   }
 
   // check vertically
-  for (let i = 0; i < board[0].length; i++) {
+  for (let i = 0; i < userBoard[0].length; i++) {
     addWord();
     curr = "";
-    for (let j = 0; j < board.length; j++) {
-      if (board[j][i] === undefined) {
+    for (let j = 0; j < userBoard.length; j++) {
+      if (userBoard[j][i] === undefined) {
         addWord();
         curr = "";
       } else {
-        curr += board[j][i];
+        curr += userBoard[j][i];
       }
     }
   }
