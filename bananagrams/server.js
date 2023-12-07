@@ -353,18 +353,18 @@ app.post("/game/joingame", async function (req, res) {
   let game = await Game.findOne({}).exec();
   if (game === null) {
     let newGame = new Game({
-      tiles: ["A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
-              "A", "B", "B", "B", "C", "C", "C", "D", "D", "D", "D", "D",
-              "D", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
-              "E", "E", "E", "E", "E", "E", "E", "F", "F", "F", "G", "G",
-              "G", "G", "H", "H", "H", "I", "I", "I", "I", "I", "I", "I",
-              "I", "I", "I", "I", "I", "J", "J", "K", "K", "L", "L", "L",
-              "L", "L", "M", "M", "M", "N", "N", "N", "N", "N", "N", "N",
-              "N", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O", "O",
-              "P", "P", "P", "Q", "Q", "R", "R", "R", "R", "R", "R", "R",
-              "R", "R", "S", "S", "S", "S", "S", "S", "T", "T", "T", "T",
-              "T", "T", "T", "T", "T", "U", "U", "U", "U", "U", "U", "V",
-              "V", "V", "W", "W", "W", "X", "X", "Y", "Y", "Y", "Z", "Z"],
+      tiles: ["A", "A", "A", "A", "A", "A",
+              "A", "B", "B", "C", "D", "D", 
+              "D", "E", "E", "E", "E", "E",
+              "E", "E", "E", "E", "F", "F",
+              "G", "G", "H", "H", "I", "I",
+              "I", "I", "I", "I", "J", "K",
+              "L", "L", "M", "N", "N", "N",
+              "N", "O", "O", "O", "O", "O",
+              "P", "P", "Q", "R", "R", "R",
+              "R", "R", "S", "S", "S", "T",
+              "T", "T", "T", "U", "U", "V",
+              "W", "W", "X", "Y", "Y", "Z"],
       players: [user],
       peel: false,
       win: false,
@@ -395,7 +395,7 @@ app.post("/game/startgame", async function (req, res) {
     let players = game.players;
     for (let player of players) {
       let playerTiles = [];
-      for (let i = 0; i < 21; i++) {
+      for (let i = 0; i < 12; i++) {
         playerTiles.push(await getTile());
       }
       await User.updateOne({ username: player }, { inGame: true, tiles: playerTiles }).exec();

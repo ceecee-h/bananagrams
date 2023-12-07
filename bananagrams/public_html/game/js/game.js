@@ -15,12 +15,6 @@ It fulfills 'POST' HTTP requests with 'peelBanana()' and 'dumpTile()'.
 var currentUser;
 var currentGame;
 
-var currentTiles = [];
-var selectedTileId = "";
-var count = 0;
-var words = [];
-
-setTimeout(getUser, 0);
 setTimeout(getGame, 0);
 var currentTiles = [];
 var selectedTileId = "";
