@@ -17,6 +17,8 @@ var currentTiles = [];
 var selectedTileId = "";
 var count = 0;
 var words = [];
+var bananas = false;
+let userBoard = new Array(21);
 
 setTimeout(getUser, 0);
 setTimeout(checkUser, 0);
@@ -75,18 +77,52 @@ function ping() {
       return response.text();
     })
     .then((data) => {
-      let newTiles = JSON.parse(data);
-      console.log(`ping'd success: ${newTiles}`);
-      if (newTiles != "") {
-        console.log(newTiles);
-        addToPool([newTiles["tile"]]);
+      let results = JSON.parse(data);
+      if (results['status'] == 'incoming') {
+        addToPool([results["tile"]]);
+      } 
+      else if (results['status'] == 'banana') {
+        let button = document.getElementById('peel_banana');
+        button.innerText = 'BANANAS';
+        bananas = true;
+      } 
+      else if (results['status'] == 'game_over') {
+        if (results['winners'].includes(currentUser.username)) {
+          if (results['winners'].length == 1) {
+            window.alert('You Won!');
+          } else {
+            let loser = results['losers'][0];
+            window.alert(`You Won!\n${loser.username} submitted invalid words!`);
+          }
+        } 
+        else {
+          window.alert('You Lost!');  
+        }
+        // redirect to the end page
+        window.location.replace(`${window.location.origin}/game/end.html`);
       }
-    });
-}
+      });
+  }
+
 
 // peels
 function peelBanana() {
-  if (verifyPeel()) {
+  if (bananas) {
+    if (verifyPeel()) {
+      console.log("sending bananas");
+      let words = makeWordList();
+      let package = { user: currentUser.username, words: words };
+      let peel = fetch("peel", {
+        method: "POST",
+        body: JSON.stringify(package),
+        headers: { "Content-Type": "application/json" },
+      })
+      .then((response) => {
+        return response.text();
+      });
+    }
+  }
+  else if (verifyPeel()) {
     console.log("sending peel");
 
     let package = { user: currentUser.username };
@@ -96,7 +132,6 @@ function peelBanana() {
       headers: { "Content-Type": "application/json" },
     })
     .then((response) => {
-      console.log("Howdy");
       return response.text();
     });
   }
@@ -105,9 +140,7 @@ function peelBanana() {
 // verify if you are allowed to peel, returns boolean true if peel is allowed and false if peel is not allowed
 function verifyPeel() {
   let numTiles = 0;
-  let userBoard = new Array(21);
-  let x;
-  let y;
+  userBoard = new Array(21);
   let start = [-1, -1];
   // translate to matrix
   for (let i = 0; i < 21; i++) {
@@ -169,34 +202,34 @@ function checkConnectivity(arr, rowStart, colStart, goal) {
 }
 
 // makes the list of words on the freakin board
-function makeWordList(board) {
+function makeWordList() {
   let words = [];
   let curr = "";
 
   // check horizontally
-  for (let i = 0; i < board.length; i++) {
+  for (let i = 0; i < userBoard.length; i++) {
     addWord();
     curr = "";
-    for (let j = 0; j < board[0].length; j++) {
-      if (board[i][j] === undefined) {
+    for (let j = 0; j < userBoard[0].length; j++) {
+      if (userBoard[i][j] === undefined) {
         addWord();
         curr = "";
       } else {
-        curr += board[i][j];
+        curr += userBoard[i][j];
       }
     }
   }
 
   // check vertically
-  for (let i = 0; i < board[0].length; i++) {
+  for (let i = 0; i < userBoard[0].length; i++) {
     addWord();
     curr = "";
-    for (let j = 0; j < board.length; j++) {
-      if (board[j][i] === undefined) {
+    for (let j = 0; j < userBoard.length; j++) {
+      if (userBoard[j][i] === undefined) {
         addWord();
         curr = "";
       } else {
-        curr += board[j][i];
+        curr += userBoard[j][i];
       }
     }
   }
