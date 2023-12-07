@@ -308,8 +308,9 @@ function dumpTile() {
         return response.text();
       })
       .then((newTiles) => {
+        currentTiles.splice(currentTiles.indexOf(oldTile.innerText), 1);
         let tiles = JSON.parse(newTiles);
-        addToPool(tiles["tiles"]);
+        addToPool(Array.from(tiles["tiles"]));
       })
       .catch((err) => window.alert(err));
     oldTile.parentElement.innerHTML = "";
@@ -325,6 +326,7 @@ function addToPool(tiles) {
   let pool = document.getElementById("tilePool");
   let poolHTML = "";
   currentTiles = currentTiles.concat(tiles);
+  console.log(currentTiles);
   for (let i = 0; i < tiles.length; i++) {
     poolHTML += makeTile(tiles[i]);
   }
