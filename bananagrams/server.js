@@ -35,7 +35,7 @@ app.use(cookieParser());
 
 app.use("/game/", authenticate);
 app.get("/game/", (req, res, next) => {
-  console.log("another");
+  //console.log("another");
   next();
 });
 app.use(express.static("public_html")); // static
@@ -121,11 +121,11 @@ function removeSessions() {
       });
     }
   }
-  //console.log(sessions);
+  console.log(sessions);
 }
 
-// check for session status every 2 seconds
-setInterval(removeSessions, 2000);
+// check for session status every 5 seconds
+setInterval(removeSessions, 5000);
 
 /* 'authenticate()':
 Redirects a user to the login page if they are not
@@ -135,8 +135,8 @@ currently in an authenticated session. Uses the
 */
 function authenticate(req, res, next) {
   let c = req.cookies;
-  console.log("auth request:");
-  console.log(req.cookies);
+  // console.log("auth request:");
+  // console.log(req.cookies);
   if (c != undefined && c.login != undefined) {
     if (
       sessions[c.login.username] != undefined &&
@@ -399,7 +399,6 @@ app.post("/game/startgame", async function (req, res) {
       for (let i = 0; i < 21; i++) {
         playerTiles.push(await getTile());
       }
-      console.log(playerTiles);
       await User.updateOne({ username: player }, { inGame: true, tiles: playerTiles }).exec();
     }
     res.end("Game started");
@@ -457,11 +456,14 @@ function checkValid(words) {
   return true;
 }
 
+var peelers = 0;
 // puts a peel into the queue
 app.post("/game/peel", async function (req, res) {
   let game = await Game.findOne({});
+  console.log("peel call\n");
 
   if (game.tiles.length < game.players.length) {
+    console.log("bananaz")
     let words = req.body.words;
     let user = req.body.user;
     let valid = checkValid(words);
@@ -476,32 +478,40 @@ app.post("/game/peel", async function (req, res) {
       }
     }
   } else {
-    console.log("peel got");
+    console.log("peeling");
     await Game.updateOne({}, { peel: true });
-    setTimeout(() => {
-      // - untested fix for unlimited peel ability
-      Game.updateOne({}, { peel: false });
-    }, 1000);
   }
 });
 
 // called on every tick to update the game state
 app.get("/game/ping/:user", async function (req, res) {
   res.setHeader("Content-Type", "text/plain");
+  console.log("ping\n");
   let user = req.params.user;
   let game = await Game.findOne({}).exec();
-  if (game && game.peel) {
+  console.log(peelers)
+  if (game && game.peel && peelers <= game.players.length) {
     let peel = await getTile();
-    let tile = { tile: peel };
-    await User.updateOne({ username: user }, { tiles: { $push: peel } });
+    let tile = { "tile": peel };
+    await User.updateOne({ username: user }, { $push: { tiles: peel } });
+
+    peelers += 1;
+    if (peelers >= game.players.length) {
+      await Game.updateOne({}, { peel: false });
+      peelers = 0;
+    }
+
     res.status(200).send(JSON.stringify(tile, null, 4));
+  }
+  else {
+    res.status(200).send(JSON.stringify(""));
   }
 });
 
 // takes a tile to be dumped, returns a json object containing a list of three new letters
-app.post("/game/dump/:user", async function (req, res) {
+app.post("/game/dump", async function (req, res) {
   res.setHeader("Content-Type", "text/plain");
-  let user = req.params.user;
+  let user = req.body.user;
   let dump = req.body.tile;
   let game = await Game.findOne({}).exec();
   if (game.tiles.length < 3) {
@@ -513,9 +523,14 @@ app.post("/game/dump/:user", async function (req, res) {
     let tile2 = await getTile();
     let tile3 = await getTile();
     let newTiles = { tiles: [tile1, tile2, tile3] };
+    
+    let userObject = await User.findOne({username: user});
+    let userTiles = userObject.tiles;
+    userTiles.splice(userTiles.indexOf(dump), 1);
+    userTiles = userTiles.concat([tile1, tile2, tile3]);
+    await User.updateOne({username: user}, {tiles: userTiles});
     await Game.updateOne({}, { $push: { tiles: dump } });
-    await User.updateOne({ username: user }, { tiles: { $push: [tile1, tile2, tile3] } });
-    res.status(200).send(JSON.stringify(newTiles, null, 4));
+    res.status(200).send(JSON.stringify(newTiles));
   }
 });
 

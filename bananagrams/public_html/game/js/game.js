@@ -74,27 +74,30 @@ function ping() {
     .then((response) => {
       return response.text();
     })
-    .then((pingg) => {
-      let newTiles = JSON.parse(pingg);
-      console.log(newTiles);
-      addToPool([newTiles["tile"]]);
+    .then((data) => {
+      let newTiles = JSON.parse(data);
+      console.log("ping'd success")
+      if (newTiles != "") {
+          console.log(newTiles);
+          addToPool([newTiles["tile"]]);
+      }
     });
 }
 
 // peels
 function peelBanana() {
-  console.log("peel");
-  console.log(currentTiles);
   if (verifyPeel()) {
+    console.log("sending peel")
     
     let package = { user: currentUser.username };
-    let peel = fetch("/game/peel", {
+    let peel = fetch("peel", {
       method: "POST",
       body: JSON.stringify(package),
       headers: { "Content-Type": "application/json" },
     });
 
     peel.then((response) => {
+      console.log("Howdy")
       return response.text();
     });
   }
@@ -124,8 +127,7 @@ function verifyPeel() {
       }
     }
   }
-  console.log(userBoard);
-  console.log(numTiles);
+
   if (currentTiles.length != numTiles) {
     window.alert("Place all tiles on the board!");
     return false;
@@ -136,6 +138,7 @@ function verifyPeel() {
     window.alert("Connect your grid!");
     return false;
   }
+  console.log("end of peel")
   return true;
 }
 
@@ -213,17 +216,17 @@ function dumpTile() {
     window.alert("Please select a tile to dump first!");
   } else {
     let oldTile = document.getElementById(selectedTileId);
-    let newTiles = fetch(`dump/${currentUser.username}`, {
+    let newTiles = fetch("dump", {
       method: "POST",
-      body: JSON.stringify({ tile: oldTile.innerText }),
+      body: JSON.stringify({ tile: oldTile.innerText, user: currentUser.username }),
       headers: { "Content-Type": "application/json" },
     })
       .then((response) => {
-        newTiles = response.text();
+        return response.text();
       })
       .then((newTiles) => {
         let tiles = JSON.parse(newTiles);
-        addToPool(tiles[tiles]);
+        addToPool(tiles);
       })
       .catch((err) => window.alert(err));
     //let newTiles = ['E', 'X', 'Z'];
