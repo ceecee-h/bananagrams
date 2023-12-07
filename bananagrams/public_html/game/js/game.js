@@ -2,14 +2,14 @@
 Name: Davin Bush, CeeCee Hill, Jonathan Houge
 Course: CSC 337 - Web Programming
 Assignment: Final Project - Bananagrams
-File: login.js
+File: game.js
 Date: 11/13/23
 
--- STILL OOSTA, EDIT WHEN PAGE IS DONE --
-This is 'login.js', the client javascript file for account handling within 'Bananagrams'.
-The HTML page 'index.html' utilizes this file.
-It allows the client to create/submit their own users & items.
-It fulfills the 'POST' HTTP requests with 'createUser()' and 'createItem()'.
+This is 'game.js', the client javascript file for running the gameplay within 'Bananagrams'.
+The HTML page 'game.html' utilizes this file.
+It allows the client to get new tiles when peels/dumps are made.
+It fulfills 'GET' HTTP requests with 'getUser()' and 'ping()'.
+It fulfills 'POST' HTTP requests with 'peelBanana()' and 'dumpTile()'.
 */
 
 var currentUser;
@@ -22,7 +22,6 @@ setTimeout(getUser, 0);
 setTimeout(checkUser, 0);
 setInterval(ping, 1000);
 
-// TODO: REMOVE ONCE INFO GRABBED FROM SERVER
 window.onload = () => {
   generateGrid();
 };
@@ -68,7 +67,10 @@ function returnHome() {
   window.location.replace(`${window.location.origin}/game/home.html`);
 }
 
-// ping server every second for game status
+/* 'ping()'
+This function is called every 1 second.
+Sends a 'GET' request to the server to get game information.
+*/
 function ping() {
   let pingg = fetch(`ping/${currentUser.username}`)
     .then((response) => {
@@ -76,19 +78,18 @@ function ping() {
     })
     .then((data) => {
       let newTiles = JSON.parse(data);
-      console.log(`ping'd success: ${newTiles}`);
       if (newTiles != "") {
-        console.log(newTiles);
         addToPool([newTiles["tile"]]);
       }
     });
 }
 
-// peels
+/* 'peelBanana()'
+This function is called when a player tries to peel.
+Sends a 'POST' request to the server to submit a request to peel.
+*/
 function peelBanana() {
-  if (verifyPeel()) {
-    console.log("sending peel");
-
+  if (verifyPeel()) { //make sure the player is allowed to peel
     let package = { user: currentUser.username };
     let peel = fetch("peel", {
       method: "POST",
@@ -96,18 +97,20 @@ function peelBanana() {
       headers: { "Content-Type": "application/json" },
     })
     .then((response) => {
-      console.log("Howdy");
       return response.text();
     });
   }
 }
 
-// verify if you are allowed to peel, returns boolean true if peel is allowed and false if peel is not allowed
+/* 'verifyPeel()'
+This function looks at the tiles on the board and verifies if a player is allowed to peel.
+(A player is allowed to peel if they have placed all of their tiles and they are in a
+  connected grid)
+It returns a boolean. 'true' if this player is allowed to peel. 'false' if this player is not allowed to peel.
+*/
 function verifyPeel() {
   let numTiles = 0;
   let userBoard = new Array(21);
-  let x;
-  let y;
   let start = [-1, -1];
   // translate to matrix
   for (let i = 0; i < 21; i++) {
@@ -137,14 +140,23 @@ function verifyPeel() {
     window.alert("Connect your grid!");
     return false;
   }
-  console.log("end of peel");
   return true;
 }
 
-// checks if the tiles in the board are fully connected
+/* 'checkConnectivity()'
+This function performs a BFS to check if the tiles on the board are in an interconnected grid
+
+arr - the 2D array representing the board.
+rowStart - an number representing the row to start searching at.
+rowStart - an number representing the column to start searching at.
+goal - the number of tiles a player should have interconnected.
+
+returns - boolean true/false if the board is fully interconnected or not.
+*/
 function checkConnectivity(arr, rowStart, colStart, goal) {
   let seen = [];
 
+  // this recursive helper function does the BFS and returns the number of interconnected tiles.
   function helper(row, col) {
     if (
       row < 0 ||
@@ -168,7 +180,13 @@ function checkConnectivity(arr, rowStart, colStart, goal) {
   return count == goal;
 }
 
-// makes the list of words on the freakin board
+/* 'makeWordList()'
+This function makes the list of words that are formed by the tiles on the board.
+
+arr - the 2D array representing the board.
+
+returns - an array of words.
+*/
 function makeWordList(board) {
   let words = [];
   let curr = "";
@@ -201,6 +219,7 @@ function makeWordList(board) {
     }
   }
 
+  // helper function to add words to the wordlist if they are longer than 1 character.
   function addWord() {
     if (curr.length > 1) {
       words.push(curr);
@@ -210,6 +229,12 @@ function makeWordList(board) {
   return words;
 }
 
+
+/* 'dumpTile()'
+This function is called when a player 'dumps' a tile (exchanges one tile for three new ones)
+It makes a 'POST' request to the server, sending the username of the player making the request
+  and the letter representing the tile being exchanged.
+*/
 function dumpTile() {
   if (selectedTileId == "") {
     window.alert("Please select a tile to dump first!");
@@ -226,31 +251,31 @@ function dumpTile() {
         return response.text();
       })
       .then((newTiles) => {
-        console.log(newTiles);
         let tiles = JSON.parse(newTiles);
         addToPool(tiles["tiles"]);
       })
       .catch((err) => window.alert(err));
-    //let newTiles = ['E', 'X', 'Z'];
     oldTile.parentElement.innerHTML = "";
     selectedTileId = "";
-    //addToPool(newTiles);
   }
 }
 
+/* 'addToPool()'
+This function takes a list of letters and uses makeTile() to turn them into HTML code and 
+changes the HTML code in game.html to visually show the new letters in the pool.
+*/
 function addToPool(tiles) {
   let pool = document.getElementById("tilePool");
   let poolHTML = "";
   currentTiles = currentTiles.concat(tiles);
   for (let i = 0; i < tiles.length; i++) {
-    // TODO: add limit to size of row
     poolHTML += makeTile(tiles[i]);
   }
   pool.innerHTML += poolHTML;
 }
 
 /* 'generateGrid()':
-Generates a 42x21 grid as the playable space
+Generates a 42x21 grid as the playable space and updates game.html
 */
 function generateGrid() {
   let grid = document.getElementById("playspace");
@@ -265,6 +290,12 @@ function generateGrid() {
   grid.innerHTML = gridHTML;
 }
 
+/* 'selectTile()':
+This function 'selects' a tile from the pool that the user clicks on. This can result in the tile
+being highlighted, unhighlighted, or swapped with another selected tile.
+
+id - the HTML id of the tile to be selected
+*/
 function selectTile(id) {
   let tile = document.getElementById(id);
   // case 1: first tile selected:
@@ -291,6 +322,12 @@ function selectTile(id) {
   }
 }
 
+/* 'selectGridTile()':
+This function 'selects' a tile on the grid that the user clicks on. This can result in the tile
+being highlighted, unhighlighted, or swapped with another selected tile.
+
+id - the HTML id of the tile to be selected
+*/
 function selectGridTile(id) {
   let gridTile = document.getElementById(id);
   // case 1: bananagram placed
@@ -307,16 +344,38 @@ function selectGridTile(id) {
   }
 }
 
+/* 'makeTile()':
+This function takes a letter and turns into HTML code representing a tile in the pool.
+
+letter - the letter to be turned into a tile.
+
+returns - the HTML code representing a tile in the pool.
+*/
 function makeTile(letter) {
   count += 1;
   return `<div class="wrap"><div class="bananaTile" id="${count}" onclick="selectTile(this.id)"><b>${letter}</b></div></div>`;
 }
 
+/* 'makeGridTile()':
+This function takes a letter and turns into HTML code representing a tile in the grid.
+
+letter - the letter to be turned into a tile.
+
+returns - the HTML code representing a tile in the grid.
+*/
 function makeGridTile(letter) {
   count += 1;
   return `<div class="bananaGridtile" id="${count}" onclick="selectTile(this.id)"><b>${letter}</b></div>`;
 }
 
+
+/* 'containsTile()':
+This function takes an HTML element and checks if that element contains a tile.
+
+element - the HTML element to check
+
+returns - true/false whether or not that element contains a tile.
+*/
 function containsTile(element) {
   return element.innerHTML.includes("banana");
 }

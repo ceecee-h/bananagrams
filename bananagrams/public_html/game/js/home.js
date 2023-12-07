@@ -117,10 +117,13 @@ function generateLobby() {
           lobby.innerHTML = '<div id="active">GAME IN PROGRESS...</div>';
         } else if (currentGame.players[0] == currentUser.username) {
           // user is host of lobby
-          lobby.innerHTML = `<div class="waiting"><p>waiting for players...</p><p>${currentGame.players.length}/4</p><button class="join" onclick="startGame()">START GAME</button></div>`;
+          lobby.innerHTML = `<div class="waiting"><p>waiting for players...</p><p>`;
+          lobby.innerHTML += `${currentGame.players.length}/4</p><button class="join"`;
+          lobby.innerHTML += ` onclick="startGame()">START GAME</button></div>`;
         } else if (currentGame.players.includes(currentUser.username)) {
           // user in lobby
-          lobby.innerHTML = `<div class="waiting"><p>waiting for players...</p><p>${currentGame.players.length}/4</p></div>`;
+          lobby.innerHTML = `<div class="waiting"><p>waiting for players...</p><p>`;
+          lobby.innerHTML += `${currentGame.players.length}/4</p></div>`;
         } else {
           // lobby is open to join
           lobby.innerHTML = '<button class="join" onclick="joinGame()">JOIN GAME</button>';
@@ -179,7 +182,9 @@ function setTitle() {
 Builds the ui component for a bananagram tile, for stylistic
 purposes only on the home page.
 
-Takes a letter and returns the html needed to embed a tile.
+letter - the letter to be turned into a tile
+
+returns - the HTML code representing a tile
 */
 function styledBananaTile(letter) {
   return `<div class="wrap"><div class="bananaTile"><b>${letter}</b></div></div>`;
@@ -188,11 +193,12 @@ function styledBananaTile(letter) {
 /* 'generateFriend()':
 Builds the ui component for a friend entry in the friend list table
 
-Takes the friend's username and win rate
+username - the friend's username
+winRate - the win rate of the friend
 */
-function generateFriend(username, win_rate) {
+function generateFriend(username, winRate) {
   let friendTable = document.getElementById("friends");
-  friendTable.innerHTML += `<tr><td>${username}</td><td>${win_rate}</td></tr>`;
+  friendTable.innerHTML += `<tr><td>${username}</td><td>${winRate}</td></tr>`;
 }
 
 /* 'generateStats()':
