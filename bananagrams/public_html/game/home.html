@@ -2,19 +2,18 @@
 Name: Davin Bush, CeeCee Hill, Jonathan Houge
 Course: CSC 337 - Web Programming
 Assignment: Final Project - Bananagrams
-File: index.html
+File: home.html
 Date: 11/13/23
 
--- STILL OOSTA, EDIT WHEN PAGE IS DONE --
-This file is the 'index.html' which houses login & account creation for the web application,
-Bananagrams. It has sections:
-Login User - input a username & password and send a post request by clicking the button.
-             the user will be then be logged in and redirected (assuming valid credentials)
-Create User - input a username & password and send a post request by clicking the button.
-              the user will then be created, an alert popping up for the client once successful.
+This file is the 'home.html' which serves as the home screen once a user is logged into
+Bananagrams. It has two states: when first loaded, the page shows users their statistics, and
+their friends' statistics. It also features a section which tells the user the rules of
+Bananagrams, and a button which allows them to join the lobby. One in the lobby, the screen will
+change to show the number of players in the lobby, and if the player was the first to join, a
+button which will allow them to start the game.
 
-The javascript logic, including the HTTP requests, is located in 'index.js'.
-The logic for the layout specifications are located in 'index.css'.
+The javascript logic, including the HTTP requests, is located in 'js/home.js'.
+The logic for the layout specifications are located in 'css/home.css'.
 -->
 
 <!DOCTYPE html>
