@@ -2,18 +2,22 @@
 Name: Davin Bush, CeeCee Hill, Jonathan Houge
 Course: CSC 337 - Web Programming
 Assignment: Final Project - Bananagrams
-File: index.js
+File: home.js
 Date: 11/13/23
 
--- STILL OOSTA, EDIT WHEN PAGE IS DONE --
-This is 'index.js', the client javascript file for account handling within 'Bananagrams'.
-The HTML page 'index.html' utilizes this file.
-It allows the client to create/submit their own users & items.
-It fulfills the 'POST' HTTP requests with 'createUser()' and 'createItem()'.
+This is 'home.js', the client javascript file for the home screen within 'Bananagrams'.
+The HTML page 'home.html' utilizes this file.
+It allows the client to join a lobby and start a game, and look at their stats,
+including their games played, wins, win rate, and their friends.
 */
 
 var currentUser; // global user variable
 setTimeout(getUser, 0);
+
+window.onload = () => {
+  generateLobby();
+};
+setInterval(generateLobby, 1000); // see if there's a game & if you're apart of it
 
 /* 'getUser()':
 Called automatically by the server on load.
@@ -29,8 +33,8 @@ function getUser() {
     })
     .then((user) => {
       currentUser = JSON.parse(user);
-      setTitle(currentUser.username);
-      generateStats(currentUser.wins, currentUser.played);
+      setTitle();
+      generateStats();
       getFriendList();
     });
 }
@@ -38,9 +42,8 @@ function getUser() {
 /* 'getFriendList()':
 Called automatically by the server on load.
 
-Sends a 'GET' request to the server to get the currently logged in user.
-Sets the global user variable and sets the 'welcome' message to be
-personalized for that user.
+Sends a 'GET' request to the server to get the currently logged in user's friend objects.
+Loops through them to ensure their correct win rate is shown - "N/A" if they've never played.
 */
 function getFriendList() {
   let friendlist = fetch(`friends/${currentUser.username}`)
@@ -52,20 +55,12 @@ function getFriendList() {
       for (let i = 0; i < currentUser.friends.length; i++) {
         if (friends[i].wins == 0 && friends[i].played == 0) {
           generateFriend(friends[i].username, "N/A");
-        } else generateFriend(friends[i].username, `${friends[i].wins}%`);
+        } else {
+          generateFriend(friends[i].username, `${friends[i].wins}%`);
+        }
       }
     });
 }
-
-// TODO: REMOVE ONCE INFO GRABBED FROM SERVER
-window.onload = () => {
-  // let friendsList = { jonathan: 77, davin: 52, ceecee: 81 };
-  // for (const key in friendsList) {
-  //   generateFriend(key, friendsList[key]);
-  // }
-  generateLobby();
-};
-setInterval(generateLobby, 1000);
 
 // SERVER COMMUNICATION
 /* 'joinGame()':
@@ -162,11 +157,11 @@ function startGame() {
 /* 'setTitle()':
 Sets the title component of the home page using
 styled bananagram tiles
-username: username of user
+
 */
-function setTitle(username) {
+function setTitle() {
   let title = document.getElementById("welcomeUser");
-  let userText = username.toUpperCase();
+  let userText = currentUser.username.toUpperCase();
   let welcome = "WELCOME";
   let titleHTML = '<div class="row">';
   for (let i = 0; i < welcome.length; i++) {
@@ -204,14 +199,19 @@ function generateFriend(username, win_rate) {
 Calculates the user statistics based off the given wins and total games
 played for a user and sets those values into the ui table component
 */
-function generateStats(wins, total) {
+function generateStats() {
+  let wins = currentUser.wins;
+  let total = currentUser.played;
+
   let win_count = document.getElementById("win_count");
-  win_count.innerText = wins;
   let lose_count = document.getElementById("lose_count");
-  lose_count.innerText = total - wins;
   let total_games = document.getElementById("total_games");
-  total_games.innerText = total;
   let win_rate = document.getElementById("win_rate");
+
+  win_count.innerText = wins;
+  lose_count.innerText = total - wins;
+  total_games.innerText = total;
+
   if (wins == 0 && total == 0) {
     win_rate.innerText = "N/A";
   } else {
