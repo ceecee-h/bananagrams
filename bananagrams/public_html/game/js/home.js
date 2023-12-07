@@ -56,7 +56,7 @@ function getFriendList() {
         if (friends[i].wins == 0 && friends[i].played == 0) {
           generateFriend(friends[i].username, "N/A");
         } else {
-          generateFriend(friends[i].username, `${friends[i].wins}%`);
+          generateFriend(friends[i].username, `${friends[i].wins.toFixed(2)}%`);
         }
       }
     });
@@ -215,7 +215,7 @@ function generateStats() {
   if (wins == 0 && total == 0) {
     win_rate.innerText = "N/A";
   } else {
-    win_rate.innerText = `${(wins / total) * 100}%`;
+    win_rate.innerText = `${((wins / total) * 100).toFixed(2)}%`;
   }
 }
 
