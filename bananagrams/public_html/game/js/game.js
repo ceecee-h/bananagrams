@@ -13,6 +13,15 @@ It fulfills the 'POST' HTTP requests with 'createUser()' and 'createItem()'.
 */
 
 var currentUser;
+var currentGame;
+
+var currentTiles = [];
+var selectedTileId = "";
+var count = 0;
+var words = [];
+
+setTimeout(getUser, 0);
+setTimeout(getGame, 0);
 var currentTiles = [];
 var selectedTileId = "";
 var count = 0;
@@ -47,15 +56,38 @@ function getUser() {
     });
 }
 
+/* 'getGame()':
+Called automatically by the server on load.
+
+Sends a 'GET' request to the server to get the current game.
+Sets the global game variable to be used by other functions later.
+Has checking to make sure the 'currentUser' variable has been set.
+
+
+*/
+function getGame() {
+  if (currentUser == undefined) {
+    setTimeout(getGame, 0); // 'getUser()' hasn't fetched yet - try again
+  } else {
+    game = fetch("getgame")
+      .then((response) => {
+        return response.text();
+      })
+      .then((game) => {
+        currentGame = JSON.parse(game);
+      });
+  }
+}
+
 /* 'checkUser()':
 Called automatically by the server on load.
 
 Kicks the user out if they're not in the game.
 */
 function checkUser() {
-  if (currentUser == undefined) {
-    setTimeout(checkUser, 0);
-  } else if (!currentUser.inGame) {
+  if (currentUser === undefined && currentGame === undefined) {
+    setTimeout(checkUser, 100);
+  } else if (!currentGame.players.includes(currentUser.username)) {
     let content = document.getElementsByTagName("body")[0];
     content.innerHTML =
       "<div class='return'><p>Hey! You're not supposed to be here!<p><button class='returnHome' onclick='returnHome()'>Return to Lobby</button></div>";
@@ -78,32 +110,28 @@ function ping() {
     })
     .then((data) => {
       let results = JSON.parse(data);
-      if (results['status'] == 'incoming') {
+      if (results["status"] == "incoming") {
         addToPool([results["tile"]]);
-      } 
-      else if (results['status'] == 'banana') {
-        let button = document.getElementById('peel_banana');
-        button.innerText = 'BANANAS';
+      } else if (results["status"] == "banana") {
+        let button = document.getElementById("peel_banana");
+        button.innerText = "BANANAS";
         bananas = true;
-      } 
-      else if (results['status'] == 'game_over') {
-        if (results['winners'].includes(currentUser.username)) {
-          if (results['winners'].length == 1) {
-            window.alert('You Won!');
+      } else if (results["status"] == "game_over") {
+        if (results["winners"].includes(currentUser.username)) {
+          if (results["winners"].length == 1) {
+            window.alert("You Won!");
           } else {
-            let loser = results['losers'][0];
+            let loser = results["losers"][0];
             window.alert(`You Won!\n${loser.username} submitted invalid words!`);
           }
-        } 
-        else {
-          window.alert('You Lost!');  
+        } else {
+          window.alert("You Lost!");
         }
         // redirect to the end page
         window.location.replace(`${window.location.origin}/game/end.html`);
       }
-      });
-  }
-
+    });
+}
 
 // peels
 function peelBanana() {
@@ -116,13 +144,11 @@ function peelBanana() {
         method: "POST",
         body: JSON.stringify(package),
         headers: { "Content-Type": "application/json" },
-      })
-      .then((response) => {
+      }).then((response) => {
         return response.text();
       });
     }
-  }
-  else if (verifyPeel()) {
+  } else if (verifyPeel()) {
     console.log("sending peel");
 
     let package = { user: currentUser.username };
@@ -130,8 +156,7 @@ function peelBanana() {
       method: "POST",
       body: JSON.stringify(package),
       headers: { "Content-Type": "application/json" },
-    })
-    .then((response) => {
+    }).then((response) => {
       return response.text();
     });
   }
