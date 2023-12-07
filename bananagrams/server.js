@@ -527,10 +527,9 @@ app.post("/game/dump", async function (req, res) {
     let userObject = await User.findOne({username: user});
     let userTiles = userObject.tiles;
     userTiles.splice(userTiles.indexOf(dump), 1);
+    userTiles = userTiles.concat([tile1, tile2, tile3]);
     await User.updateOne({username: user}, {tiles: userTiles});
-
     await Game.updateOne({}, { $push: { tiles: dump } });
-    await User.updateOne({ username: user }, { $push: { tiles: { $each: [tile1, tile2, tile3] } } });
     res.status(200).send(JSON.stringify(newTiles));
   }
 });
