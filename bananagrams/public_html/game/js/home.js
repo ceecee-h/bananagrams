@@ -111,23 +111,27 @@ function generateLobby() {
         if (currentGame.inProgress && currentGame.players.includes(currentUser.username)) {
           window.location.replace(`${window.location.origin}/game/game.html`);
         }
+
+        let content;
         // game present
         if (currentGame.inProgress) {
           // game in progress, cannot join
-          lobby.innerHTML = '<div id="active">GAME IN PROGRESS...</div>';
+          content = '<div id="active">GAME IN PROGRESS...</div>';
         } else if (currentGame.players[0] == currentUser.username) {
           // user is host of lobby
-          lobby.innerHTML = `<div class="waiting"><p>waiting for players...</p><p>`;
-          lobby.innerHTML += `${currentGame.players.length}/4</p><button class="join"`;
-          lobby.innerHTML += ` onclick="startGame()">START GAME</button></div>`;
+          content = `<div class="waiting"><p>waiting for players...</p><p>`;
+          content += `${currentGame.players.length}/4</p><button class="join"`;
+          content += ` onclick="startGame()">START GAME</button></div>`;
         } else if (currentGame.players.includes(currentUser.username)) {
           // user in lobby
-          lobby.innerHTML = `<div class="waiting"><p>waiting for players...</p><p>`;
-          lobby.innerHTML += `${currentGame.players.length}/4</p></div>`;
+          content = `<div class="waiting"><p>waiting for players...</p><p>`;
+          content += `${currentGame.players.length}/4</p></div>`;
         } else {
           // lobby is open to join
-          lobby.innerHTML = '<button class="join" onclick="joinGame()">JOIN GAME</button>';
+          content = '<button class="join" onclick="joinGame()">JOIN GAME</button>';
         }
+
+        lobby.innerHTML = content;
       }
     });
 }
