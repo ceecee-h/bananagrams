@@ -76,7 +76,7 @@ function ping() {
     })
     .then((data) => {
       let newTiles = JSON.parse(data);
-      console.log("ping'd success");
+      console.log(`ping'd success: ${newTiles}`);
       if (newTiles != "") {
         console.log(newTiles);
         addToPool([newTiles["tile"]]);
@@ -94,9 +94,8 @@ function peelBanana() {
       method: "POST",
       body: JSON.stringify(package),
       headers: { "Content-Type": "application/json" },
-    });
-
-    peel.then((response) => {
+    })
+    .then((response) => {
       console.log("Howdy");
       return response.text();
     });
