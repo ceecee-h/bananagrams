@@ -216,17 +216,17 @@ function dumpTile() {
     window.alert("Please select a tile to dump first!");
   } else {
     let oldTile = document.getElementById(selectedTileId);
-    let newTiles = fetch(`dump/${currentUser.username}`, {
+    let newTiles = fetch("dump", {
       method: "POST",
-      body: JSON.stringify({ tile: oldTile.innerText }),
+      body: JSON.stringify({ tile: oldTile.innerText, user: currentUser.username }),
       headers: { "Content-Type": "application/json" },
     })
       .then((response) => {
-        newTiles = response.text();
+        return response.text();
       })
       .then((newTiles) => {
         let tiles = JSON.parse(newTiles);
-        addToPool(tiles[tiles]);
+        addToPool(tiles);
       })
       .catch((err) => window.alert(err));
     //let newTiles = ['E', 'X', 'Z'];

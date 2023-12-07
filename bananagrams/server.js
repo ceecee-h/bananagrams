@@ -493,7 +493,7 @@ app.get("/game/ping/:user", async function (req, res) {
   if (game && game.peel && peelers <= game.players.length) {
     let peel = await getTile();
     let tile = { "tile": peel };
-    await User.updateOne({ username: user }, { tiles: { $push: peel } });
+    await User.updateOne({ username: user }, { $push: { tiles: peel } });
 
     peelers += 1;
     if (peelers >= game.players.length) {
@@ -509,9 +509,9 @@ app.get("/game/ping/:user", async function (req, res) {
 });
 
 // takes a tile to be dumped, returns a json object containing a list of three new letters
-app.post("/game/dump/:user", async function (req, res) {
+app.post("/game/dump", async function (req, res) {
   res.setHeader("Content-Type", "text/plain");
-  let user = req.params.user;
+  let user = req.body.user;
   let dump = req.body.tile;
   let game = await Game.findOne({}).exec();
   if (game.tiles.length < 3) {
@@ -523,9 +523,15 @@ app.post("/game/dump/:user", async function (req, res) {
     let tile2 = await getTile();
     let tile3 = await getTile();
     let newTiles = { tiles: [tile1, tile2, tile3] };
+    
+    let userObject = await User.findOne({username: user});
+    let userTiles = userObject.tiles;
+    userTiles.splice(userTiles.indexOf(dump), 1);
+    await User.updateOne({username: user}, {tiles: userTiles});
+
     await Game.updateOne({}, { $push: { tiles: dump } });
-    await User.updateOne({ username: user }, { tiles: { $push: [tile1, tile2, tile3] } });
-    res.status(200).send(JSON.stringify(newTiles, null, 4));
+    await User.updateOne({ username: user }, { $push: { tiles: { $each: [tile1, tile2, tile3] } } });
+    res.status(200).send(JSON.stringify(newTiles));
   }
 });
 
