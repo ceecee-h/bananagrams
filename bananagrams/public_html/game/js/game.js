@@ -76,10 +76,10 @@ function ping() {
     })
     .then((data) => {
       let newTiles = JSON.parse(data);
-      console.log("ping'd success")
+      console.log("ping'd success");
       if (newTiles != "") {
-          console.log(newTiles);
-          addToPool([newTiles["tile"]]);
+        console.log(newTiles);
+        addToPool([newTiles["tile"]]);
       }
     });
 }
@@ -87,8 +87,8 @@ function ping() {
 // peels
 function peelBanana() {
   if (verifyPeel()) {
-    console.log("sending peel")
-    
+    console.log("sending peel");
+
     let package = { user: currentUser.username };
     let peel = fetch("peel", {
       method: "POST",
@@ -97,7 +97,7 @@ function peelBanana() {
     });
 
     peel.then((response) => {
-      console.log("Howdy")
+      console.log("Howdy");
       return response.text();
     });
   }
@@ -138,7 +138,7 @@ function verifyPeel() {
     window.alert("Connect your grid!");
     return false;
   }
-  console.log("end of peel")
+  console.log("end of peel");
   return true;
 }
 
@@ -220,13 +220,16 @@ function dumpTile() {
       method: "POST",
       body: JSON.stringify({ tile: oldTile.innerText, user: currentUser.username }),
       headers: { "Content-Type": "application/json" },
-    })
+    });
+
+    newTiles
       .then((response) => {
         return response.text();
       })
       .then((newTiles) => {
+        console.log(newTiles);
         let tiles = JSON.parse(newTiles);
-        addToPool(tiles);
+        addToPool(tiles["tiles"]);
       })
       .catch((err) => window.alert(err));
     //let newTiles = ['E', 'X', 'Z'];
