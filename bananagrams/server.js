@@ -470,16 +470,18 @@ app.post("/game/peel", async function (req, res) {
     await Game.updateOne({}, { win: valid });
     await Game.updateOne({}, { user: user });
     let players = game.players;
-    for (i in players) {
+    for (let i in players) {
       let player = players[i];
       await User.updateOne({ username: player }, { $inc: { played: 1 } });
       if ((player == user && valid) || (player != user && !valid)) {
         await User.updateOne({ username: player }, { $inc: { wins: 1 } });
       }
     }
+    res.send('BANANAS');
   } else {
     console.log("peeling");
     await Game.updateOne({}, { peel: true });
+    res.send('peel success');
   }
 });
 
