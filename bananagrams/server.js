@@ -442,7 +442,7 @@ function validWords() {
     wordList.push(word.trim());
   }
   return wordList;
-};
+}
 
 function checkValid(words) {
   let dict = validWords();
@@ -462,7 +462,7 @@ app.post("/game/peel/", async function (req, res) {
   console.log("peel call\n");
 
   if (game.tiles.length < game.players.length) {
-    console.log("bananaz")
+    console.log("bananaz");
     let words = req.body.words;
     console.log(words);
     let user = req.body.user;
@@ -477,11 +477,11 @@ app.post("/game/peel/", async function (req, res) {
         await User.updateOne({ username: player }, { $inc: { wins: 1 } });
       }
     }
-    res.send('BANANAS');
+    res.send("BANANAS");
   } else {
     console.log("peeling");
     await Game.updateOne({}, { peel: true });
-    res.send('peel success');
+    res.send("peel success");
   }
 });
 
@@ -490,11 +490,11 @@ app.get("/game/ping/:user", async function (req, res) {
   res.setHeader("Content-Type", "text/plain");
   let user = req.params.user;
   let game = await Game.findOne({}).exec();
-  console.log(peelers)
+  console.log(peelers);
   if (game && game.peel && peelers <= game.players.length) {
     console.log("peel\n");
     let peel = await getTile();
-    let tile = { "tile": peel, "status": "incoming"};
+    let tile = { tile: peel, status: "incoming" };
     await User.updateOne({ username: user }, { $push: { tiles: peel } });
 
     peelers += 1;
@@ -504,8 +504,7 @@ app.get("/game/ping/:user", async function (req, res) {
     }
 
     res.status(200).send(JSON.stringify(tile, null, 4));
-  }
-  else if (game.user != '') {
+  } else if (game.user != "") {
     console.log("game over\n");
     // player has won
     let winners = [];
@@ -515,27 +514,23 @@ app.get("/game/ping/:user", async function (req, res) {
       if (game.win) {
         if (game.user == p) {
           winners.push(p);
-        }
-        else losers.push(p);
-      }
-      else {
+        } else losers.push(p);
+      } else {
         if (game.user == p) {
           losers.push(p);
         } else winners.push(p);
       }
     }
-    let stat = {"status": 'game_over', "winners": winners, "losers": losers};
+    let stat = { status: "game_over", winners: winners, losers: losers };
     res.status(200).send(JSON.stringify(stat, null, 4));
-  }
-  else if (game.tiles.length < game.players.length) {
+  } else if (game.tiles.length < game.players.length) {
     console.log("bananas\n");
     // player can bananas
-    let stat = {"status": 'banana'};
+    let stat = { status: "banana" };
     res.status(200).send(JSON.stringify(stat, null, 4));
-  }
-  else {
+  } else {
     console.log("nop\n");
-    let stat = {"status": 'peel'};
+    let stat = { status: "peel" };
     res.status(200).send(JSON.stringify(stat, null, 4));
   }
 });
@@ -555,12 +550,12 @@ app.post("/game/dump", async function (req, res) {
     let tile2 = await getTile();
     let tile3 = await getTile();
     let newTiles = { tiles: [tile1, tile2, tile3] };
-    
-    let userObject = await User.findOne({username: user});
+
+    let userObject = await User.findOne({ username: user });
     let userTiles = userObject.tiles;
     userTiles.splice(userTiles.indexOf(dump), 1);
     userTiles = userTiles.concat([tile1, tile2, tile3]);
-    await User.updateOne({username: user}, {tiles: userTiles});
+    await User.updateOne({ username: user }, { tiles: userTiles });
     await Game.updateOne({}, { $push: { tiles: dump } });
     res.status(200).send(JSON.stringify(newTiles));
   }
@@ -592,4 +587,6 @@ app.get("/game/:user/friendrequest", async function (req, res) {
 });
 
 // confirmation in terminal - app is up & listening
-app.listen(port, () => {console.log(`App listening at http://localhost:${port}`)});
+app.listen(port, () => {
+  console.log(`App listening at http://localhost:${port}`);
+});

@@ -21,7 +21,7 @@ var selectedTileId = "";
 var count = 0;
 var words = [];
 var bananas = false;
-let userBoard = new Array(21);
+var userBoard = new Array(21);
 
 setTimeout(getUser, 0);
 setTimeout(checkUser, 0);
@@ -167,7 +167,7 @@ It returns a boolean. 'true' if this player is allowed to peel. 'false' if this 
 */
 function verifyPeel() {
   let numTiles = 0;
-  let userBoard = new Array(21);
+  userBoard = new Array(21);
   let start = [-1, -1];
   // translate to matrix
   for (let i = 0; i < 21; i++) {
@@ -286,7 +286,6 @@ function makeWordList(board) {
   return words;
 }
 
-
 /* 'dumpTile()'
 This function is called when a player 'dumps' a tile (exchanges one tile for three new ones)
 It makes a 'POST' request to the server, sending the username of the player making the request
@@ -308,12 +307,20 @@ function dumpTile() {
         return response.text();
       })
       .then((newTiles) => {
+        let check = newTiles.split(":");
+        if (check[0] == "DUMP ERROR") {
+          window.alert(newTiles);
+          oldTile.style.borderColor = "rgb(59, 31, 24)";
+          return;
+        }
+
         currentTiles.splice(currentTiles.indexOf(oldTile.innerText), 1);
         let tiles = JSON.parse(newTiles);
         addToPool(Array.from(tiles["tiles"]));
+        oldTile.parentElement.innerHTML = "";
       })
       .catch((err) => window.alert(err));
-    oldTile.parentElement.innerHTML = "";
+
     selectedTileId = "";
   }
 }
@@ -426,7 +433,6 @@ function makeGridTile(letter) {
   count += 1;
   return `<div class="bananaGridtile" id="${count}" onclick="selectTile(this.id)"><b>${letter}</b></div>`;
 }
-
 
 /* 'containsTile()':
 This function takes an HTML element and checks if that element contains a tile.
